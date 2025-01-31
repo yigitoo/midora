@@ -4,14 +4,16 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/router";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { isLoggedIn, logout } = useAuth();
-
+  const router = useRouter()
   const logout_btn = () => {
     logout();
-    window.location.href = "/";
+    router.push('/')
+
   };
 
   return (
