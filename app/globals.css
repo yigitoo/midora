@@ -113,3 +113,19 @@ body {
   background-color: #e0e0e0;
 }
 
+@layer utilities {
+  .nav-link {
+    @apply px-3 py-2 rounded-md text-sm font-medium transition-colors;
+    @apply hover:bg-primary/90 hover:text-primary-foreground;
+  }
+
+  .mobile-nav-link {
+    @apply block px-3 py-2 rounded-md text-base font-medium transition-colors;
+    @apply hover:bg-primary/90 hover:text-primary-foreground;
+  }
+
+  .container {
+    @apply px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl;
+  }
+}
+

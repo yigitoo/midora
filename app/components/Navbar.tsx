@@ -22,24 +22,9 @@ export default function Navbar() {
 
           {/* Desktop menu */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link
-              href="/forum"
-              className="hover:bg-primary/90 hover:text-primary-foreground px-3 py-2 rounded-md text-sm font-medium transition-colors"
-            >
-              Forum
-            </Link>
-            <Link
-              href="/portfolios"
-              className="hover:bg-primary/90 hover:text-primary-foreground px-3 py-2 rounded-md text-sm font-medium transition-colors"
-            >
-              Portfolios
-            </Link>
-            <Link
-              href="/about"
-              className="hover:bg-primary/90 hover:text-primary-foreground px-3 py-2 rounded-md text-sm font-medium transition-colors"
-            >
-              Hakkımızda
-            </Link>
+            <Link href="/forum" className="nav-link">Forum</Link>
+            <Link href="/portfolios" className="nav-link">Portfolios</Link>
+            <Link href="/about" className="nav-link">Hakkımızda</Link>
           </div>
 
           {/* Mobile menu button */}
@@ -53,21 +38,13 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-4">
             {isLoggedIn ? (
               <>
-                <Button variant="secondary" asChild>
-                  <Link href="/profile">Profil</Link>
-                </Button>
-                <Button variant="destructive" onClick={logout}>
-                  Çıkış yap
-                </Button>
+                <Button variant="secondary" asChild><Link href="/profile">Profil</Link></Button>
+                <Button variant="destructive" onClick={logout}>Çıkış yap</Button>
               </>
             ) : (
               <>
-                <Button variant="secondary" asChild>
-                  <Link href="/login">Giriş yap</Link>
-                </Button>
-                <Button asChild>
-                  <Link href="/signup">Kayıt ol</Link>
-                </Button>
+                <Button variant="secondary" asChild><Link href="/login">Giriş yap</Link></Button>
+                <Button asChild><Link href="/signup">Kayıt ol</Link></Button>
               </>
             )}
           </div>
@@ -76,36 +53,20 @@ export default function Navbar() {
         {/* Mobile menu */}
         {isOpen && (
           <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              <Link href="/forum" className="mobile-nav-link">
-                Forum
-              </Link>
-              <Link href="/portfolios" className="mobile-nav-link">
-                Portfolios
-              </Link>
-              <Link href="/about" className="mobile-nav-link">
-                Hakkımızda
-              </Link>
+            <div className="px-2 pt-2 pb-3 space-y-1 flex flex-col items-start">
+              <Link href="/forum" className="mobile-nav-link">Forum</Link>
+              <Link href="/portfolios" className="mobile-nav-link">Portfolios</Link>
+              <Link href="/about" className="mobile-nav-link">Hakkımızda</Link>
+              <hr className="w-full border-primary-foreground" />
               {isLoggedIn ? (
                 <>
-                  <Link href="/profile" className="mobile-nav-link">
-                    Profil
-                  </Link>
-                  <button
-                    onClick={logout}
-                    className="mobile-nav-link w-full text-left text-red-500"
-                  >
-                    Çıkış yap
-                  </button>
+                  <Link href="/profile" className="mobile-nav-link">Profil</Link>
+                  <button onClick={logout} className="mobile-nav-link w-full text-left text-white bg-red-500">Çıkış yap</button>
                 </>
               ) : (
                 <>
-                  <Link href="/login" className="mobile-nav-link">
-                    Giriş yap
-                  </Link>
-                  <Link href="/signup" className="mobile-nav-link">
-                    Kayıt ol
-                  </Link>
+                  <Link href="/login" className="mobile-nav-link">Giriş yap</Link>
+                  <Link href="/signup" className="mobile-nav-link">Kayıt ol</Link>
                 </>
               )}
             </div>
