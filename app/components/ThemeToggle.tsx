@@ -17,11 +17,10 @@ export function ThemeToggle() {
         onCheckedChange={toggleTheme}
         className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-input"
       />
-      <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+      <Moon className="h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
       <Label htmlFor="theme-toggle" className="sr-only">
-        Toggle theme
+        Temayı değiştir
       </Label>
     </div>
   )
 }
-

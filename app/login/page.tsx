@@ -12,42 +12,43 @@ import { useAuth } from "../components/AuthProvider"
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const { login } = useAuth()
   const router = useRouter()
+  const { login } = useAuth()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // Here you would typically handle the login logic
     console.log("Login attempt with:", { email, password })
     login() // Mock login
-    router.push("/settings") // Redirect to settings page after login
+    router.push("/profile") // Redirect to settings page after login
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background">
-      <Card className="w-full max-w-md bg-card text-card-foreground">
+    <div className="container mx-auto py-10">
+      <Card className="bg-card text-card-foreground">
         <CardHeader>
-          <CardTitle>Login to Midora</CardTitle>
-          <CardDescription>Enter your credentials to access your account</CardDescription>
+          <CardTitle>Giriş Yap</CardTitle>
+          <CardDescription>Hesabınıza giriş yapın</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">E-mail</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder="yigit@midora.com.tr"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Şifre</Label>
               <Input
                 id="password"
                 type="password"
+                placeholder="********"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -56,12 +57,12 @@ export default function LoginPage() {
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-              Login
+              Giriş yap
             </Button>
             <p className="text-sm text-center text-muted-foreground">
-              Don't have an account?
+              Hesabın yok mu?
               <Link href="/signup" className="text-primary hover:text-primary/90 underline ml-1">
-                Sign up
+                Kayıt ol
               </Link>
             </p>
           </CardFooter>
@@ -70,4 +71,3 @@ export default function LoginPage() {
     </div>
   )
 }
-

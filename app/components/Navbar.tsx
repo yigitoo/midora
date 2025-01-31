@@ -1,73 +1,117 @@
-"use client"
-
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { ThemeToggle } from "./ThemeToggle"
-import { useAuth } from "./AuthProvider"
+"use client";
+import { useState } from "react";
+import Link from "next/link";
+import { Menu, X } from "lucide-react";
+import { useAuth } from "./AuthProvider";
+import { Button } from "@/components/ui/button";
 
 export default function Navbar() {
-  const { isLoggedIn, logout } = useAuth()
+  const [isOpen, setIsOpen] = useState(false);
+  const { isLoggedIn, logout } = useAuth();
 
   return (
     <nav className="bg-primary text-primary-foreground shadow-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
+          {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0">
               <span className="font-bold text-xl">Midora</span>
             </Link>
-            <div className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-4">
-                <Link
-                  href="/forum"
-                  className="hover:bg-primary/90 hover:text-primary-foreground px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                >
-                  Forum
-                </Link>
-                <Link
-                  href="/portfolios"
-                  className="hover:bg-primary/90 hover:text-primary-foreground px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                >
-                  Portfolios
-                </Link>
-                {isLoggedIn && (
-                  <Link
-                    href="/profile"
-                    className="hover:bg-primary/90 hover:text-primary-foreground px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                  >
-                    Profile
-                  </Link>
-                )}
-              </div>
-            </div>
           </div>
-          <div className="hidden md:block">
-            <div className="ml-4 flex items-center md:ml-6">
-              <ThemeToggle />
+
+          {/* Desktop menu */}
+          <div className="hidden md:flex items-center space-x-4">
+            <Link
+              href="/forum"
+              className="hover:bg-primary/90 hover:text-primary-foreground px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            >
+              Forum
+            </Link>
+            <Link
+              href="/portfolios"
+              className="hover:bg-primary/90 hover:text-primary-foreground px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            >
+              Portfolios
+            </Link>
+            <Link
+              href="/about"
+              className="hover:bg-primary/90 hover:text-primary-foreground px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            >
+              Hakkımızda
+            </Link>
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <button onClick={() => setIsOpen(!isOpen)}>
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+
+          {/* Desktop auth buttons */}
+          <div className="hidden md:flex items-center space-x-4">
+            {isLoggedIn ? (
+              <>
+                <Button variant="secondary" asChild>
+                  <Link href="/profile">Profil</Link>
+                </Button>
+                <Button variant="destructive" onClick={logout}>
+                  Çıkış yap
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="secondary" asChild>
+                  <Link href="/login">Giriş yap</Link>
+                </Button>
+                <Button asChild>
+                  <Link href="/signup">Kayıt ol</Link>
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Mobile menu */}
+        {isOpen && (
+          <div className="md:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              <Link href="/forum" className="mobile-nav-link">
+                Forum
+              </Link>
+              <Link href="/portfolios" className="mobile-nav-link">
+                Portfolios
+              </Link>
+              <Link href="/about" className="mobile-nav-link">
+                Hakkımızda
+              </Link>
               {isLoggedIn ? (
                 <>
-                  <Button variant="secondary" asChild className="ml-2">
-                    <Link href="/settings">Settings</Link>
-                  </Button>
-                  <Button variant="outline" onClick={logout} className="ml-2">
-                    Logout
-                  </Button>
+                  <Link href="/profile" className="mobile-nav-link">
+                    Profil
+                  </Link>
+                  <button
+                    onClick={logout}
+                    className="mobile-nav-link w-full text-left text-red-500"
+                  >
+                    Çıkış yap
+                  </button>
                 </>
               ) : (
                 <>
-                  <Button variant="secondary" asChild className="ml-2">
-                    <Link href="/login">Login</Link>
-                  </Button>
-                  <Button asChild className="ml-2">
-                    <Link href="/signup">Sign Up</Link>
-                  </Button>
+                  <Link href="/login" className="mobile-nav-link">
+                    Giriş yap
+                  </Link>
+                  <Link href="/signup" className="mobile-nav-link">
+                    Kayıt ol
+                  </Link>
                 </>
               )}
             </div>
           </div>
-        </div>
+        )}
       </div>
     </nav>
-  )
+  );
 }
-

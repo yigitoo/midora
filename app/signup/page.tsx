@@ -14,40 +14,40 @@ export default function SignupPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically handle the signup logic
-    console.log("Signup attempt with:", { name, email, password })
+    // Handle signup logic here
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background">
-      <Card className="w-full max-w-md">
+    <div className="container mx-auto py-10">
+      <Card className="bg-card text-card-foreground">
         <CardHeader>
-          <CardTitle>Sign up for Midora</CardTitle>
-          <CardDescription>Create your account to get started</CardDescription>
+          <CardTitle>Kayıt Ol</CardTitle>
+          <CardDescription>Yeni bir hesap oluşturun</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input id="name" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} required />
+              <Label htmlFor="name">İsim</Label>
+              <Input id="name" placeholder="Yiğit GÜMÜŞ" value={name} onChange={(e) => setName(e.target.value)} required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">E-mail</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder="yigit@midora.com.tr"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Şifre</Label>
               <Input
                 id="password"
                 type="password"
                 value={password}
+                placeholder="********"
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
@@ -55,12 +55,12 @@ export default function SignupPage() {
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full">
-              Sign Up
+              Kayıt ol
             </Button>
             <p className="text-sm text-center text-muted-foreground">
-              Already have an account?
+              Zaten hesabın var mı?
               <Link href="/login" className="text-primary hover:underline ml-1">
-                Login
+                Giriş yap
               </Link>
             </p>
           </CardFooter>
@@ -69,4 +69,3 @@ export default function SignupPage() {
     </div>
   )
 }
-
