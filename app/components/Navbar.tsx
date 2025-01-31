@@ -16,7 +16,7 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0">
-              <span className="font-bold text-xl">Midora</span>
+              <span className="font-bold text-xl">💸Midora</span>
             </Link>
           </div>
 
