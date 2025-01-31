@@ -4,7 +4,8 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/compat/router";
+import { useRouter } from "next/navigation";
+
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,7 +14,7 @@ export default function Navbar() {
 
   const logout_btn = () => {
     logout();
-    router?.push('/')
+    router.push('/')
 
   };
 
@@ -47,7 +48,7 @@ export default function Navbar() {
             {isLoggedIn ? (
               <>
                 <Button variant="secondary" asChild><Link href="/profile">Profil</Link></Button>
-                <Button variant="destructive" onClick={logout}>Çıkış yap</Button>
+                <Button variant="destructive" onClick={logout_btn}>Çıkış yap</Button>
               </>
             ) : (
               <>
