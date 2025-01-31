@@ -67,7 +67,7 @@ const AboutPage: React.FC = () => {
               müşterilerimize en kaliteli hizmet ve ürünleri sunmaya kararlıyız.
             </p>
 
-            <div className="">
+            <div className="text-center">
               <h2>Kurucularımız</h2>
               <FoundersSection />
             </div>
