@@ -13,11 +13,10 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const router = useRouter()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   const login = () => setIsLoggedIn(true)
-  const logout = () => {setIsLoggedIn(false); router.push('/')}
+  const logout = () => setIsLoggedIn(false)
 
   return <AuthContext.Provider value={{ isLoggedIn, login, logout }}>{children}</AuthContext.Provider>
 }

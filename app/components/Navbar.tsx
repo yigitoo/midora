@@ -9,6 +9,11 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { isLoggedIn, logout } = useAuth();
 
+  const logout_btn = () => {
+    logout();
+    window.location.href = "/";
+  };
+
   return (
     <nav className="bg-primary text-primary-foreground shadow-md">
       <div className="max-w-7xl mx-auto px-4">
@@ -61,7 +66,7 @@ export default function Navbar() {
               {isLoggedIn ? (
                 <>
                   <Link href="/profile" className="mobile-nav-link">Profil</Link>
-                  <button onClick={logout} className="mobile-nav-link w-full text-left text-white bg-red-500">Çıkış yap</button>
+                  <button onClick={logout_btn} className="mobile-nav-link w-full text-left text-white bg-red-500">Çıkış yap</button>
                 </>
               ) : (
                 <>
