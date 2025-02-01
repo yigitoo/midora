@@ -129,7 +129,7 @@ export const Navbar = () => {
                 href="/portfolios"
                 className="nav-link hover:opacity-80 transition-opacity px-3 py-2"
               >
-                Portfolios
+                Portföyler
               </Link>
               <Link
                 href="/about"
@@ -206,7 +206,7 @@ export const Navbar = () => {
                 href="/portfolios"
                 className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 transition-colors"
               >
-                Portfolios
+                Portföyler
               </Link>
               <Link
                 href="/about"
