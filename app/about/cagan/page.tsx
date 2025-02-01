@@ -7,7 +7,7 @@ import Link from "next/link";
 import { founders } from "../page";
 
 const AboutPage = () => {
-  const founder = founders[1];
+  const founder = founders[0];
   return (
     <div className="min-h-screen bg-background p-4 md:p-8 lg:p-12">
       {/* Main container */}
