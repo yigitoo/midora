@@ -11,6 +11,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Mail, Facebook, Twitter, Instagram, Github } from "lucide-react";
 
 const founders = [
   {
@@ -73,50 +76,222 @@ const FoundersSection: React.FC = () => {
   );
 };
 
-const AboutPage: React.FC = () => {
+export default function AboutPage() {
+  const fadeIn = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.6 }
+  }
+
   return (
-    <div className={`container mx-auto py-10 about-page ${inter.className}`}>
-      <Card className="bg-card text-card-foreground">
-        <CardHeader>
-          <CardTitle>Hakkımızda</CardTitle>
-          <CardDescription style={{ paddingTop: "10px", fontSize: "15px" }}>
-            GÖLTÜRK Holding'e hoş geldiniz. Sektörümüzde lider bir şirketiz ve
-            müşterilerimize en kaliteli hizmet ve ürünleri sunmaya kararlıyız.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className={`about-page ${inter.className}`}>
-            <h1>GÖLTÜRK Holding Hakkında</h1>
-            <p>
-              GÖLTÜRK Holding'e hoş geldiniz. Sektörümüzde lider bir şirketiz ve
-              müşterilerimize en kaliteli hizmet ve ürünleri sunmaya kararlıyız.
-            </p>
+    <div className="container mx-auto py-12 px-4">
+      {/* Hero Section */}
+      <motion.div
+        initial={fadeIn.initial}
+        animate={fadeIn.animate}
+        transition={fadeIn.transition}
+        className="text-center mb-16"
+      >
+        <h1 className="text-4xl md:text-5xl font-bold mb-4">Midora Hakkında</h1>
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          Finansal özgürlüğünüzü kazanmanıza yardımcı olmak için buradayız
+        </p>
+      </motion.div>
 
-            <div className="text-center font-bold">
-              <h2 className="pt-10">Kurucularımız</h2>
-              <FoundersSection />
-            </div>
-            <div className="p-5">
-              <h2 className="text-center font-bold p-5">Misyonumuz</h2>
-              <Label className="text-center">
-                Misyonumuz, yenilikçi çözümler, yüksek kaliteli ürünler ve
-                mükemmel müşteri hizmetleri ile müşterilerimize olağanüstü değer
-                sunmaktır.
-              </Label>
-            </div>
-            <div className="p-5">
-              <h2 className="text-center font-bold p-5">Vizyonumuz</h2>
-              <Label className="text-center">
-                Vizyonumuz, mükemmellik, sürdürülebilirlik ve sosyal sorumluluk
-                konusundaki taahhüdümüzle tanınan, sektörümüzde küresel bir
-                lider olmaktır.
-              </Label>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Mission & Vision */}
+      <div className="grid md:grid-cols-2 gap-8 mb-16">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Card>
+            <CardContent className="p-6">
+              <h2 className="text-2xl font-bold mb-4">Misyonumuz</h2>
+              <p className="text-muted-foreground">
+                Kullanıcılarımıza finansal özgürlük yolunda rehberlik etmek ve
+                yatırım konusunda bilinçli kararlar almalarına yardımcı olmak.
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <Card>
+            <CardContent className="p-6">
+              <h2 className="text-2xl font-bold mb-4">Vizyonumuz</h2>
+              <p className="text-muted-foreground">
+                Türkiye'nin en güvenilir ve kapsamlı yatırım platformu olarak
+                kullanıcılarımızın finansal hedeflerine ulaşmalarını sağlamak.
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+
+      {/* Features */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="mb-16"
+      >
+        <h2 className="text-3xl font-bold text-center mb-8">Neler Sunuyoruz?</h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          <Card>
+            <CardContent className="p-6">
+              <h3 className="text-xl font-semibold mb-2">Portföy Yönetimi</h3>
+              <p className="text-muted-foreground">
+                Yatırımlarınızı tek bir yerden takip edin ve analiz edin.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <h3 className="text-xl font-semibold mb-2">Forum Topluluğu</h3>
+              <p className="text-muted-foreground">
+                Deneyimli yatırımcılarla bilgi ve deneyim paylaşın.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <h3 className="text-xl font-semibold mb-2">Piyasa Analizi</h3>
+              <p className="text-muted-foreground">
+                Güncel piyasa verilerini ve analizleri inceleyin.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </motion.div>
+
+      {/* Founders Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+        className="mb-16"
+      >
+        <h2 className="text-3xl font-bold text-center mb-12">Kurucularımız</h2>
+        <div className="grid md:grid-cols-2 gap-8">
+          {founders.map((founder, index) => (
+            <motion.div
+              key={founder.name}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 * (index + 1) }}
+            >
+              <Card className="overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="relative">
+                    <div className="aspect-w-16 aspect-h-9 relative">
+                      <img
+                        src={founder.image}
+                        alt={founder.name}
+                        className="object-cover w-full h-[800px]"
+                      />
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-2xl font-bold mb-2">{founder.name}</h3>
+                    <p className="text-muted-foreground mb-4">{founder.job}</p>
+                    <p className="text-sm text-muted-foreground mb-4">{founder.education}</p>
+
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="font-semibold mb-2">Teknik Yetenekler</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {founder.technicalSkills.map((skill, i) => (
+                            <span
+                              key={i}
+                              className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold mb-2">Deneyimler</h4>
+                        <ul className="list-disc list-inside text-muted-foreground">
+                          {founder.experiences.map((exp, i) => (
+                            <li key={i}>{exp}</li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold mb-2">İlgi Alanları</h4>
+                        <ul className="list-disc list-inside text-muted-foreground">
+                          {founder.interests.map((interest, i) => (
+                            <li key={i}>{interest}</li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div className="flex gap-4 pt-4">
+                        <a
+                          href={founder.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-muted-foreground hover:text-primary transition-colors"
+                        >
+                          <Github className="h-5 w-5" />
+                        </a>
+                        <a
+                          href={founder.linkedin}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-muted-foreground hover:text-primary transition-colors"
+                        >
+                          <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                          </svg>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Contact Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="text-center"
+      >
+        <h2 className="text-3xl font-bold mb-8">İletişime Geçin</h2>
+        <div className="flex justify-center space-x-4">
+          <Button variant="outline" size="icon">
+            <Mail className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="icon">
+            <Facebook className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="icon">
+            <Twitter className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="icon">
+            <Instagram className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="icon">
+            <Github className="h-4 w-4" />
+          </Button>
+        </div>
+      </motion.div>
     </div>
-  );
-};
-
-export default AboutPage;
+  )
+}
