@@ -22,17 +22,15 @@ export const Navbar = () => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
-  const
-   AuthButtons = () => isLoggedIn ? (
+  const AuthButtons = () => isLoggedIn ? (
     <div className="flex items-center space-x-4">
       <Link href="/profile">
         <Button variant="ghost" className="text-white hover:text-gray-300">
-          {user?.name || "Profil"}
+          {user?.username || user?.name || "Profile"}
         </Button>
       </Link>
       <Button
         variant="ghost"
-
         className="bg-red-500 block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-red-700 text-white transition-colors"
         onClick={() => {logout()}}
       >
@@ -43,12 +41,12 @@ export const Navbar = () => {
     <div className="flex items-center space-x-4">
       <Link href="/login">
         <Button variant="ghost" className="text-white hover:text-gray-300">
-          Login
+          Giriş yap
         </Button>
       </Link>
       <Link href="/signup">
         <Button variant="default" className="bg-blue-600 hover:bg-blue-700">
-          Sign Up
+          Kayıt ol
         </Button>
       </Link>
     </div>
@@ -73,12 +71,12 @@ export const Navbar = () => {
       <Link href="/login"
         className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 transition-colors"
       >
-        Login
+        Giriş yap
       </Link>
       <Link href="/signup"
         className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 transition-colors"
       >
-        Sign Up
+        Kayıt ol
       </Link>
     </>
   );

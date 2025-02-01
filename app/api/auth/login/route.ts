@@ -9,6 +9,16 @@ export async function POST(request: Request) {
     const client = await clientPromise
     const db = client.db('midora')
 
+    // Check if account is suspended
+    const isSuspended = await db.collection('suspended_accounts').findOne({ email })
+    if (isSuspended) {
+      return NextResponse.json({
+        error: 'Account suspended',
+        suspensionReason: isSuspended.reason,
+        suspendedUntil: isSuspended.until
+      }, { status: 403 })
+    }
+
     // Find user
     const user = await db.collection('users').findOne({ email })
     if (!user) {
@@ -41,6 +51,7 @@ export async function POST(request: Request) {
         id: user._id,
         email: user.email,
         name: user.name,
+        username: user.username,
         bio: user.bio,
         location: user.location,
         createdAt: user.createdAt

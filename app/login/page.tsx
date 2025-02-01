@@ -21,7 +21,7 @@ export default function LoginPage() {
     try {
       await login(email, password)
     } catch (error) {
-      setError("Login failed. Please check your credentials.")
+      setError("Giriş başarısız. Lütfen bilgilerinizi kontrol edin.")
     }
   }
 

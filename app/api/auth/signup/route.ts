@@ -3,14 +3,15 @@ import clientPromise from '@/lib/database'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
+// POST signup
 export async function POST(request: Request) {
   try {
-    const { email, password, name } = await request.json()
+    const { email, password, name, username } = await request.json()
 
     // Input validation
-    if (!email || !password || !name) {
+    if (!email || !password || !name || !username) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Bütün kişisel bilgileri doldurmadınız.' },
         { status: 400 }
       )
     }
@@ -18,11 +19,20 @@ export async function POST(request: Request) {
     const client = await clientPromise
     const db = client.db('midora')
 
-    // Check if user exists
-    const existingUser = await db.collection('users').findOne({ email })
-    if (existingUser) {
+    // Check if email exists
+    const emailExists = await db.collection('users').findOne({ email })
+    if (emailExists) {
       return NextResponse.json(
-        { error: 'Email already registered' },
+        { error: 'Bu mail adresi zaten başka bir hesap tarafından kullanılıyor.' },
+        { status: 409 }
+      )
+    }
+
+    // Check if username exists
+    const usernameExists = await db.collection('users').findOne({ username })
+    if (usernameExists) {
+      return NextResponse.json(
+        { error: 'Bu kullanıcı adı zaten başka bir hesapta kullanılıyor.' },
         { status: 409 }
       )
     }
@@ -33,6 +43,7 @@ export async function POST(request: Request) {
     // Create user
     const result = await db.collection('users').insertOne({
       email,
+      username,
       password: hashedPassword,
       name,
       bio: '',
@@ -41,7 +52,7 @@ export async function POST(request: Request) {
       updatedAt: new Date()
     })
 
-    // Generate token
+    // Create token
     const token = jwt.sign(
       { userId: result.insertedId, email },
       process.env.JWT_SECRET!,
@@ -53,6 +64,7 @@ export async function POST(request: Request) {
       user: {
         id: result.insertedId,
         email,
+        username,
         name,
         createdAt: new Date()
       }
@@ -66,3 +78,4 @@ export async function POST(request: Request) {
     )
   }
 }
+

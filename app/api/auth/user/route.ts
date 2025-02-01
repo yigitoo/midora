@@ -64,12 +64,12 @@ export async function PUT(request: Request) {
     )
 
     if (!result) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Kullanıcı bulunamadı' }, { status: 404 })
     }
 
     return NextResponse.json(result)
   } catch (error) {
     console.error('Update user error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'İç sunucu hatası' }, { status: 500 })
   }
 }

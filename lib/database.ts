@@ -23,6 +23,12 @@ if (process.env.NODE_ENV === 'development') {
 } else {
   client = new MongoClient(uri, options)
   clientPromise = client.connect()
+
+/*
+  client.db('midora').collection('users').createIndex({ email: 1 }, { unique: true })
+  client.db('midora').collection('users').createIndex({ username: 1 }, { unique: true })
+  client.db('midora').collection('suspended_accounts').createIndex({ "email": 1 }, { unique: true })
+*/
 }
 
 export default clientPromise

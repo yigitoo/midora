@@ -10,6 +10,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 
 export default function SignupPage() {
   const [name, setName] = useState("")
+  const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
@@ -19,10 +20,10 @@ export default function SignupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      await signup(email, password, name)
+      await signup(email, password, name, username)
     } catch (error) {
-      setError("Signup failed. Please try again.")
-    }
+      setError(error.message)
+    }1
   }
 
   return (
@@ -40,6 +41,15 @@ export default function SignupPage() {
                 placeholder="İsim"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Input
+                type="text"
+                placeholder="Kullanıcı Adı"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
               />
             </div>
