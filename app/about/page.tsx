@@ -35,8 +35,10 @@ const FoundersSection: React.FC = () => {
   return (
     <div className="founders-section flex justify-center p-10">
       {founders.map((founder, index) => (
-        <div key={index} className="founder-card"
-        style={{cursor: 'pointer'}}
+        <div key={index} style={{
+          backgroundColor: '#0d0d0d',
+          cursor: 'pointer',
+        }} className="founder-card"
         onClick={() => {
           window.location.href = founder.foundersPage;
         }}>
@@ -51,8 +53,8 @@ const FoundersSection: React.FC = () => {
                 (e.target as HTMLImageElement).src = "/";
               }}
             />
-            <p className="pt-5 text-black">{founder.name}</p>
-            <p className="pt-5" style={{color: 'grey'}}>{founder.education}</p>
+            <p className="pt-5 text-white">{founder.name}</p>
+            <p className="pt-5 text-white">{founder.education}</p>
         </div>
       ))}
     </div>
