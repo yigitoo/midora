@@ -7,20 +7,22 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
-import { useAuth } from "../components/AuthProvider"
+import { useAuth } from "../services/AuthProvider"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
   const router = useRouter()
   const { login } = useAuth()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically handle the login logic
-    console.log("Login attempt with:", { email, password })
-    login() // Mock login
-    router.push("/profile") // Redirect to settings page after login
+    try {
+      await login(email, password)
+    } catch (error) {
+      setError("Login failed. Please check your credentials.")
+    }
   }
 
   return (
@@ -54,6 +56,7 @@ export default function LoginPage() {
                 required
               />
             </div>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90">

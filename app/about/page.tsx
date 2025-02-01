@@ -18,12 +18,24 @@ const founders = [
     image: "/images/cagan_donmez.jpg",
     education: "Nazilli Fen Lisesi'25",
     foundersPage: "/about/cagan",
+    github: 'https://github.com/yigitoo',
+    linkedin: 'https://www.linkedin.com/in/%C3%A7a%C4%9Fan-d%C3%B6nmez-4b7830347/',
+    job: 'Engineer - Midora CEO',
+    technicalSkills: ['Satış ve Pazarlama', 'Sosyal Medya', 'Reklamcılık'],
+    experiences: ['Takım Liderliği', 'Midora CEO\'su'],
+    interests: ['Yapay Zeka ve Makine Öğrenmesi', 'Borsa ve Para Piyasaları', 'Finans ve Yatırım']
   },
   {
     name: "Yiğit GÜMÜŞ",
     image: "/images/yigit_gumus.jpg",
     education: "Nazilli Fen Lisesi'25",
     foundersPage: "/about/yigit",
+    github: 'https://github.com/yigitoo',
+    linkedin: 'https://www.linkedin.com/in/-yigitgumus/',
+    job: 'Economist - Midora CTO',
+    technicalSkills: ['Programlama', 'Yatırım', 'Finans', 'Derin Öğrenme ve Doğal Dil İşleme Modelleri'],
+    experiences: ['Mevcut iş tecrübesi', 'Midora CTO\'su', 'Programlama Uzmanlığı'],
+    interests: ['Yapay Zeka ve Makine Öğrenmesi', 'Finans ve Yatırım', 'Programlama']
   }
 ]
 

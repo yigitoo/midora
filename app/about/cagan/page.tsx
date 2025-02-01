@@ -31,16 +31,16 @@ const AboutPage = () => {
                 </div>
                 <div className="space-y-4">
                   <h1 className="text-3xl md:text-4xl font-bold">{founder.name}</h1>
-                  <p className="text-muted-foreground">Economist</p>
+                  <p className="text-muted-foreground">{founder.job}</p>
                   <div className="flex gap-4">
                     <Link
-                      href="https://github.com/yigitoo"
+                      href={founder.github}
                       className="text-primary hover:text-primary/80 transition-colors"
                     >
                       GitHub
                     </Link>
                     <Link
-                      href="https://www.linkedin.com/in/-yigitgumus/"
+                      href={founder.linkedin}
                       className="text-primary hover:text-primary/80 transition-colors"
                     >
                       LinkedIn
@@ -89,12 +89,11 @@ const AboutPage = () => {
           {/* Technical Skills */}
           <Card>
             <CardContent className="p-6">
-              <h3 className="text-xl font-semibold mb-4">Technical Skills</h3>
+              <h3 className="text-xl font-semibold mb-4">Teknik Yetenekleri</h3>
               <ul className="space-y-2 text-muted-foreground">
-                <li>React & Next.js</li>
-                <li>TypeScript</li>
-                <li>Node.js</li>
-                <li>Database Design</li>
+                {founder.technicalSkills.map((skill, index) => (
+                  <li key={index}>{skill}</li>
+                ))}
               </ul>
             </CardContent>
           </Card>
@@ -102,12 +101,11 @@ const AboutPage = () => {
           {/* Experience */}
           <Card>
             <CardContent className="p-6">
-              <h3 className="text-xl font-semibold mb-4">Experience</h3>
+              <h3 className="text-xl font-semibold mb-4">Tecrübe</h3>
               <ul className="space-y-2 text-muted-foreground">
-                <li>Full Stack Development</li>
-                <li>Cloud Architecture</li>
-                <li>API Design</li>
-                <li>Team Leadership</li>
+                {founder.experiences.map((exp, index) => (
+                  <li key={index}>{exp}</li>
+                ))}
               </ul>
             </CardContent>
           </Card>
@@ -115,12 +113,11 @@ const AboutPage = () => {
           {/* Interests */}
           <Card>
             <CardContent className="p-6">
-              <h3 className="text-xl font-semibold mb-4">Interests</h3>
+              <h3 className="text-xl font-semibold mb-4">İlgi Alanları</h3>
               <ul className="space-y-2 text-muted-foreground">
-                <li>Open Source</li>
-                <li>AI & Machine Learning</li>
-                <li>Web3 Technologies</li>
-                <li>System Design</li>
+                {founder.interests.map((interest, index) => (
+                  <li key={index}>{interest}</li>
+                ))}
               </ul>
             </CardContent>
           </Card>

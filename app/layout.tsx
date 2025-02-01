@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import Navbar from "./components/Navbar"
 import { ThemeProvider } from "./components/ThemeProvider"
-import { AuthProvider } from "./components/AuthProvider"
+import { AuthProvider } from "./services/AuthProvider"
 import type React from "react" // Added import for React
 
 const inter = Inter({ subsets: ["latin"] })
@@ -23,9 +23,13 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <ThemeProvider>
-            <Navbar />
-            <main>{children}</main>
-          </ThemeProvider>
+            <div className="min-h-screen">
+              <Navbar />
+              <main className="pt-16">
+                {children}
+              </main>
+            </div>
+         </ThemeProvider>
         </AuthProvider>
       </body>
     </html>
