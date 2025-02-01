@@ -111,7 +111,7 @@ export const Navbar = () => {
                   <Image className="mx-3" style={{
                     borderRadius: "50%",
                     border: "2px solid var(--color-primary-foreground)"
-                  }} width={50} height={50} src={siteLogoPath} alt="midora" />
+                  }} width={70} height={70} src={siteLogoPath} alt="midora" />
                   Midora
                 </span>
               </Link>
