@@ -1,117 +1,131 @@
 "use client";
-import React from "react";
-import Image from "next/image";
-import { Inter } from "next/font/google";
-import { ThemeToggle } from "../../components/ThemeToggle";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 
+import { Card, CardContent } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
 import { founders } from "../page";
 
-const inter = Inter({ subsets: ["latin"] });
-
-const AboutPage: React.FC = () => {
+const AboutPage = () => {
   const founder = founders[1];
   return (
-    <div className={`container mx-auto py-10 about-page ${inter.className}`}>
-      <Card className="bg-card text-card-foreground">
-        <CardHeader className="text-center">
-          <CardTitle style={{ fontSize: "2rem" }}>{founder.name}</CardTitle>
-        </CardHeader>
-        <CardContent className="ml-10">
-          <div className={`flex align-center about-page ${inter.className}`}>
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'between',
-              alignItems: 'center',
-              width: '30vw',
-              fontSize: '1.2rem',
-            }}>
-              <Image
-                className="founder-image"
-                style={{
-                  border: "1px solid transparent",
-                  borderRadius: "20%",
-                }}
-                src={founder.image}
-                alt={founder.name}
-                width={300}
-                height={300}
-              />
-              <div style={{
-                textAlign: 'justify',
-                width: '25vw',
-                fontSize: '1rem',
-                paddingRight: '0rem',
-                marginTop: '4rem',
-              }}>
-                Finans ve ekonomiye küçüklükten gelen
-              hevesim ile birlikte ortağım ve okul arkadaşım Çağan Dönmez ile daha önce
-              hiç deneyimlemediğimiz bu yola atılmak için kolları sıvadık.
-              Bu süreçte, birçok farklı alanda bilgi birikimi
-              edinme fırsatı buldum. Özellikle, finansal okuryazarlık ve yatırım
-              konularında kendimi geliştirmek için çaba harcadım. Bu süreçte,
-              kripto paralar, hisse senetleri ve yatırım fonları gibi farklı
-              yatırım araçları hakkında bilgi sahibi oldum. Ayrıca, finansal
-              okuryazarlık konusunda farkındalık yaratmak ve gençlerin,
-              yaşlıların kısacası 7'den 70'e bu sektördeki herkesin bir şeyler
-              öğrenmesine katkıda bulunmak ve forumlar üzerinde ekonomi, finans ve gündem üzerine münakaşa ederek
-              istişare kültürünü geliştirmek istedik. Aynı zamanda üyelerimize
-              finansal analiz noktasında hizmetler vererek yatırımlarını daha bilinç
-              ve daha kazançlı nasıl yapabileceklerini göstermek istedik.
-              Bu doğrultuda, ortağım ve ben "Midora" adlı bu platformu kurduk.
-              Umarım beğenirsiniz :)
-              </div>
-            </div>
-            <div
-              className="mr-5"
-              style={{ borderLeft: "1px solid #0362fc", height: "90vh" }}
-            ></div>
-            <div
-              style={{
-                textAlign: "justify",
-                width: "30vw",
-                fontSize: "1.2rem",
-                paddingRight: "0rem",
-              }}
-              className="pt-5 pl-5"
-            >
-              <p style={{ textIndent: '2rem', marginBottom: '2rem'}}>
-                Merhaba, ben Yiğit Gümüş. 18 yaşında ve Nazilli Fen Lisesi mezunu
-              bir teknoloji tutkunu olarak, bugüne kadar çeşitli projelerde yer
-              aldım ve farklı disiplinlerde önemli başarılara imza attım.
-              Hayatımın merkezinde her zaman öğrenme, yenilik yaratma ve topluma
-              fayda sağlama fikri oldu. Geçmişte, TEKNOFEST ve TÜBİTAK'ın hem
-              coğrafya hem de yazılım alanlarındaki projelerinde aktif olarak
-              yer aldım. Ayrıca, TEKNOFEST Doğal Dil İşleme Yarışması'na
-              katıldım ve burada yapay zeka teknolojilerini insan odaklı
-              uygulamalara dönüştürme fırsatı buldum.
-              </p>
-              <p style={{ textIndent: '2rem', marginBottom: '2rem'}}>
-              Önemli bir diğer başarım,
-              Türk Japon Vakfı Afet Risk Yarışması'nda ikinci olarak
-              afet konusunda Türkiye adına buluşlar geliştirmem oldu.
-              Bu proje, afet riskini azaltma konusundaki kararlılığımı ve
-              sorumluluğumu bir kez daha gözler önüne serdi. Bunun yanı sıra,
-              Ankara Bilim Üniversitesi'nin 3. Verimlilik Yarışması'nda
-              birincilik elde ederek yenilikçi fikirlerimi
-              sergileme fırsatı buldum. Tüm bu deneyimler, hayata fark katma
-              isteğimi ve sürekli daha iyisini arama azmimi besledi.
-              </p>
-              <p style={{ textIndent: '2rem' }}>
-              Bu noktada,
-              geleceğe daha süredürülebilir bir yaşam bırakma amacıyla bu
-              şirketi kurdum. Vizyonum, teknolojiyi insan hayatını iyileştiren,
-              doğayla uyumlu ve daha yaşanabilir bir geleceğe hizmet eden
-              çözümlere dönüştürmek. Yaratıcılık ve disiplinle dolu bu
-              yolculukta, herkese ilham vermeyi ve topluma kalıcı değerler
-              kazandırmayı hedefliyorum.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="min-h-screen bg-background p-4 md:p-8 lg:p-12">
+      {/* Main container */}
+      <div className="max-w-7xl mx-auto">
+        {/* Hero Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Card className="h-full">
+              <CardContent className="p-6">
+                <div className="relative w-full aspect-square rounded-lg overflow-hidden mb-6">
+                  <Image
+                    src={founder.image}
+                    alt={founder.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="space-y-4">
+                  <h1 className="text-3xl md:text-4xl font-bold">{founder.name}</h1>
+                  <p className="text-muted-foreground">Economist</p>
+                  <div className="flex gap-4">
+                    <Link
+                      href="https://github.com/yigitoo"
+                      className="text-primary hover:text-primary/80 transition-colors"
+                    >
+                      GitHub
+                    </Link>
+                    <Link
+                      href="https://www.linkedin.com/in/-yigitgumus/"
+                      className="text-primary hover:text-primary/80 transition-colors"
+                    >
+                      LinkedIn
+                    </Link>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <Card className="h-full">
+              <CardContent className="p-6">
+                <h2 className="text-2xl md:text-3xl font-semibold mb-6">About Me</h2>
+                <div className="space-y-4 text-muted-foreground">
+                  <p>
+                    Hello! I'm a passionate software developer focused on creating elegant solutions
+                    to complex problems. With expertise in modern web technologies, I strive to build
+                    applications that make a difference.
+                  </p>
+                  <p>
+                    My journey in software development began with a curiosity for how things work,
+                    which evolved into a career building robust and scalable applications.
+                  </p>
+                  <p>
+                    When I'm not coding, you can find me exploring new technologies, contributing
+                    to open-source projects, or sharing knowledge with the developer community.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+
+        {/* Skills Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
+          {/* Technical Skills */}
+          <Card>
+            <CardContent className="p-6">
+              <h3 className="text-xl font-semibold mb-4">Technical Skills</h3>
+              <ul className="space-y-2 text-muted-foreground">
+                <li>React & Next.js</li>
+                <li>TypeScript</li>
+                <li>Node.js</li>
+                <li>Database Design</li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Experience */}
+          <Card>
+            <CardContent className="p-6">
+              <h3 className="text-xl font-semibold mb-4">Experience</h3>
+              <ul className="space-y-2 text-muted-foreground">
+                <li>Full Stack Development</li>
+                <li>Cloud Architecture</li>
+                <li>API Design</li>
+                <li>Team Leadership</li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Interests */}
+          <Card>
+            <CardContent className="p-6">
+              <h3 className="text-xl font-semibold mb-4">Interests</h3>
+              <ul className="space-y-2 text-muted-foreground">
+                <li>Open Source</li>
+                <li>AI & Machine Learning</li>
+                <li>Web3 Technologies</li>
+                <li>System Design</li>
+              </ul>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
     </div>
   );
 };

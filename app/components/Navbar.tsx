@@ -6,29 +6,29 @@ import { useAuth } from "./AuthProvider";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
-
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { isLoggedIn, logout } = useAuth();
-  const router = useRouter()
+  const router = useRouter();
 
   const logout_btn = () => {
     logout();
-    router.push('/')
-
+    router.push("/");
   };
 
   return (
     <nav
-    style={{
+      style={{
         position: "sticky",
         top: "0",
         overflow: "hidden",
         backgroundColor: "#1a202c",
-        color: 'white',
+        color: "white",
         borderBottom: "3px solid var(--color-primary-foreground)",
-    }}
-      className="navbar-bg-secondary text-secondary-foreground shadow-md">
+        zIndex: 99999,
+      }}
+      className="navbar-bg-secondary text-secondary-foreground shadow-md"
+    >
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -40,15 +40,32 @@ export default function Navbar() {
 
           {/* Desktop menu */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link href="/forum" className="nav-link">Forum</Link>
-            <Link href="/portfolios" className="nav-link">Portfolios</Link>
-            <Link href="/about" className="nav-link">Hakkımızda</Link>
+            <Link href="/forum" className="nav-link">
+              Forum
+            </Link>
+            <Link href="/portfolios" className="nav-link">
+              Portfolios
+            </Link>
+            <Link href="/about" className="nav-link">
+              Hakkımızda
+            </Link>
           </div>
 
           {/* Mobile menu button */}
           <div className="md:hidden">
             <button onClick={() => setIsOpen(!isOpen)}>
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
+              {isOpen ? (
+                <X
+                  style={{
+                    border: "1px solid black",
+                    borderRadius: "50%",
+                    padding: "5px",
+                  }}
+                  size={24}
+                />
+              ) : (
+                <Menu size={24} />
+              )}
             </button>
           </div>
 
@@ -56,13 +73,21 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-4">
             {isLoggedIn ? (
               <>
-                <Button variant="secondary" asChild><Link href="/profile">Profil</Link></Button>
-                <Button variant="destructive" onClick={logout_btn}>Çıkış yap</Button>
+                <Button variant="secondary" asChild>
+                  <Link href="/profile">Profil</Link>
+                </Button>
+                <Button variant="destructive" onClick={logout_btn}>
+                  Çıkış yap
+                </Button>
               </>
             ) : (
               <>
-                <Button variant="secondary" asChild><Link href="/login">Giriş yap</Link></Button>
-                <Button asChild><Link href="/signup">Kayıt ol</Link></Button>
+                <Button variant="secondary" asChild>
+                  <Link href="/login">Giriş yap</Link>
+                </Button>
+                <Button asChild>
+                  <Link href="/signup">Kayıt ol</Link>
+                </Button>
               </>
             )}
           </div>
@@ -72,19 +97,36 @@ export default function Navbar() {
         {isOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 flex flex-col items-start">
-              <Link href="/forum" className="mobile-nav-link">Forum</Link>
-              <Link href="/portfolios" className="mobile-nav-link">Portfolios</Link>
-              <Link href="/about" className="mobile-nav-link">Hakkımızda</Link>
+              <Link href="/forum" className="mobile-nav-link">
+                Forum
+              </Link>
+              <Link href="/portfolios" className="mobile-nav-link">
+                Portfolios
+              </Link>
+              <Link href="/about" className="mobile-nav-link">
+                Hakkımızda
+              </Link>
               <hr className="w-full border-primary-foreground" />
               {isLoggedIn ? (
                 <>
-                  <Link href="/profile" className="mobile-nav-link">Profil</Link>
-                  <button onClick={logout_btn} className="mobile-nav-link w-full text-left text-white bg-red-500">Çıkış yap</button>
+                  <Link href="/profile" className="mobile-nav-link">
+                    Profil
+                  </Link>
+                  <button
+                    onClick={logout_btn}
+                    className="mobile-nav-link w-full text-left text-white bg-red-500"
+                  >
+                    Çıkış yap
+                  </button>
                 </>
               ) : (
                 <>
-                  <Link href="/login" className="mobile-nav-link">Giriş yap</Link>
-                  <Link href="/signup" className="mobile-nav-link">Kayıt ol</Link>
+                  <Link href="/login" className="mobile-nav-link">
+                    Giriş yap
+                  </Link>
+                  <Link href="/signup" className="mobile-nav-link">
+                    Kayıt ol
+                  </Link>
                 </>
               )}
             </div>
