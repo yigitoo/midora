@@ -106,11 +106,20 @@ body {
 }
 
 .founder-image {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
+  width: 400px;
+  height: 400px;
+  border-radius: 20%;
   object-fit: cover;
   background-color: #e0e0e0;
+}
+
+@media (max-width: 768px) {
+  .founder-image {
+    width: 150;
+    height: 150px;
+    border-radius: 20%;
+    object-fit: stretch;
+  }
 }
 
 @layer utilities {
@@ -129,3 +138,7 @@ body {
   }
 }
 
+
+.navbar-bg-secondary {
+  background-clip: #1a202c;
+}

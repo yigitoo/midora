@@ -12,36 +12,47 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 
-const inter = Inter({ subsets: ["latin"] });
-
 const founders = [
   {
-    name: "Kurucu 1",
-    image: "/path/to/image1.jpg",
+    name: "Çağan Dönmez",
+    image: "/images/cagan_donmez.jpg",
+    education: "Nazilli Fen Lisesi'25",
+    foundersPage: "/about/cagan",
   },
   {
-    name: "Kurucu 2",
-    image: "/path/to/image2.jpg",
-  },
-  // Add more founders as needed
-];
+    name: "Yiğit GÜMÜŞ",
+    image: "/images/yigit_gumus.jpg",
+    education: "Nazilli Fen Lisesi'25",
+    foundersPage: "/about/yigit",
+  }
+]
+
+export { founders };
+
+const inter = Inter({ subsets: ["latin"] });
 
 const FoundersSection: React.FC = () => {
   return (
-    <div className="founders-section">
+    <div className="founders-section flex justify-center p-10">
       {founders.map((founder, index) => (
-        <div key={index} className="founder-card">
+        <div key={index} className="founder-card"
+        style={{cursor: 'pointer'}}
+        onClick={() => {
+          window.location.href = founder.foundersPage;
+        }}>
           <Image
-            src={founder.image}
-            alt={founder.name}
-            width={150}
-            height={150}
-            className="founder-image"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "/path/to/default-image.jpg";
-            }}
-          />
-          <p>{founder.name}</p>
+              src={founder.image}
+              alt={founder.name}
+              style={{cursor: 'pointer'}}
+              width={300}
+              height={300}
+              className="founder-image"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "/";
+              }}
+            />
+            <p className="pt-5 text-black">{founder.name}</p>
+            <p className="pt-5" style={{color: 'grey'}}>{founder.education}</p>
         </div>
       ))}
     </div>
@@ -67,22 +78,26 @@ const AboutPage: React.FC = () => {
               müşterilerimize en kaliteli hizmet ve ürünleri sunmaya kararlıyız.
             </p>
 
-            <div className="text-center">
-              <h2>Kurucularımız</h2>
+            <div className="text-center font-bold">
+              <h2 className="pt-10">Kurucularımız</h2>
               <FoundersSection />
             </div>
-            <h2>Misyonumuz</h2>
-            <p>
-              Misyonumuz, yenilikçi çözümler, yüksek kaliteli ürünler ve
-              mükemmel müşteri hizmetleri ile müşterilerimize olağanüstü değer
-              sunmaktır.
-            </p>
-            <h2>Vizyonumuz</h2>
-            <p>
-              Vizyonumuz, mükemmellik, sürdürülebilirlik ve sosyal sorumluluk
-              konusundaki taahhüdümüzle tanınan, sektörümüzde küresel bir lider
-              olmaktır.
-            </p>
+            <div className="p-5">
+              <h2 className="text-center font-bold p-5">Misyonumuz</h2>
+              <Label className="text-center">
+                Misyonumuz, yenilikçi çözümler, yüksek kaliteli ürünler ve
+                mükemmel müşteri hizmetleri ile müşterilerimize olağanüstü değer
+                sunmaktır.
+              </Label>
+            </div>
+            <div className="p-5">
+              <h2 className="text-center font-bold p-5">Vizyonumuz</h2>
+              <Label className="text-center">
+                Vizyonumuz, mükemmellik, sürdürülebilirlik ve sosyal sorumluluk
+                konusundaki taahhüdümüzle tanınan, sektörümüzde küresel bir
+                lider olmaktır.
+              </Label>
+            </div>
           </div>
         </CardContent>
       </Card>

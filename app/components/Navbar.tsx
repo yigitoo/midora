@@ -19,7 +19,16 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-primary text-primary-foreground shadow-md">
+    <nav
+    style={{
+        position: "sticky",
+        top: "0",
+        overflow: "hidden",
+        backgroundColor: "#1a202c",
+        color: 'white',
+        borderBottom: "3px solid var(--color-primary-foreground)",
+    }}
+      className="navbar-bg-secondary text-secondary-foreground shadow-md">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
