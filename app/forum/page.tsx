@@ -1,90 +1,95 @@
-"use client";
+"use client"
 
-import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { useAuth } from "@/app/services/AuthProvider";
-import { Search, Loader2, MessageCircle } from "lucide-react";
-import debounce from "lodash/debounce";
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent } from "@/components/ui/card"
+import { useAuth } from "@/app/services/AuthProvider"
+import { Search, Loader2, MessageCircle, Heart } from "lucide-react"
+import debounce from "lodash/debounce"
+import type { ForumEntry, ForumResponse } from "@/types/forum"
 
-import type { Comment, ForumEntry, ForumResponse } from "@/types/forum";
-import { useRouter } from "next/navigation";
+const ENTRIES_PER_PAGE = 20
 
-const formatDate = (date: string): string => {
-  return new Date(date).toLocaleString("tr-TR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
-
-const ForumPage = () => {
-  const [entries, setEntries] = useState<ForumEntry[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const router = useRouter();
+export default function ForumPage() {
+  const [entries, setEntries] = useState<ForumEntry[]>([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState("")
+  const { isLoggedIn } = useAuth()
+  const router = useRouter()
 
   const fetchEntries = async (page: number, search: string = "") => {
     try {
-      setLoading(true);
+      setLoading(true)
       const response = await fetch(
-        `/api/forum?page=${page}&search=${encodeURIComponent(search)}`
-      );
-      if (!response.ok) throw new Error("Aradığınız göneriler bulunamadı.");
-
-      const data: ForumResponse = await response.json();
-      setEntries(data.posts);
-      setTotalPages(data.totalPages);
-      setCurrentPage(data.currentPage);
+        `/api/forum?page=${page}&limit=${ENTRIES_PER_PAGE}&search=${encodeURIComponent(search)}`
+      )
+      if (!response.ok) throw new Error()
+      const data: ForumResponse = await response.json()
+      setEntries(data.posts)
+      setTotalPages(data.totalPages)
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Bir hata oluştu");
+      console.error("Failed to fetch entries:", error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
-
-  const debouncedSearch = debounce((value: string) => {
-    setCurrentPage(1);
-    fetchEntries(1, value);
-  }, 500);
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    debouncedSearch(e.target.value);
-  };
-
-  useEffect(() => {
-    return () => {
-      debouncedSearch.cancel();
-    };
-  }, []);
-
-  useEffect(() => {
-    fetchEntries(currentPage, searchTerm);
-  }, [currentPage]);
-
-  if (error) {
-    setTimeout(() => (window.location.href = "/forum"), 1500);
-    return <div className="text-center text-red-500 py-8">{error}</div>;
   }
 
-  return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-center text-3xl font-bold mb-6">Forum Ana Sayfası</h1>
+  const debouncedSearch = debounce((value: string) => {
+    setCurrentPage(1)
+    fetchEntries(1, value)
+  }, 300)
 
-      <div className="max-w-md mx-auto mb-8">
-        <div className="relative">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value)
+    debouncedSearch(e.target.value)
+  }
+
+  const handleLike = async (entryId: string) => {
+    if (!isLoggedIn) {
+      router.push('/login')
+      return
+    }
+
+    try {
+      const token = localStorage.getItem('token')
+      const response = await fetch(`/api/forum/entry/${entryId}/like`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      if (!response.ok) throw new Error()
+
+      setEntries(prev =>
+        prev.map(entry =>
+          entry._id === entryId
+            ? { ...entry, likes: entry.likes + 1 }
+            : entry
+        )
+      )
+    } catch (error) {
+      console.error("Failed to like entry:", error)
+    }
+  }
+
+  useEffect(() => {
+    fetchEntries(currentPage, searchTerm)
+  }, [currentPage])
+
+  return (
+    <div className="container mx-auto py-8 space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Forum</h1>
+        <div className="relative w-72">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Forum gönderilerinde ara..."
+            placeholder="Ara..."
             value={searchTerm}
             onChange={handleSearch}
             className="pl-10"
@@ -93,75 +98,69 @@ const ForumPage = () => {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-8">
+        <div className="flex justify-center">
           <Loader2 className="h-8 w-8 animate-spin" />
         </div>
       ) : (
-        <>
-          <ul className="space-y-4 mb-8">
-            {entries.map((entry) => (
-              <li
-                key={entry._id.toString()}
-                className="border p-4 rounded-lg shadow-sm"
-              >
+        <div className="space-y-4">
+          {entries.map(entry => (
+            <Card key={entry._id} className="hover:shadow-md transition-all">
+              <CardContent className="p-6">
                 <h2 className="text-xl font-semibold mb-2">{entry.title}</h2>
-                <p className="text-gray-700 mb-2 line-clamp-3">
+                <p className="text-muted-foreground line-clamp-2 mb-4">
                   {entry.content}
                 </p>
-                <div className="flex justify-between items-center text-sm text-gray-500">
-                  <div className="flex items-center gap-4">
-                    <span
-                      className="cursor-pointer"
-                      onClick={() => window.open("/user/" + entry.author)}
-                    >
-                      <strong>Yazar: </strong>
-                      {entry.author}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <MessageCircle className="h-4 w-4" />
-                      {entry.comments?.length || 0}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span>
-                      {formatDate(
-                        new Date(entry.uploadTime).toLocaleDateString("tr-TR")
-                      )}
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => router.push(`/forum/entry/${entry._id}`)}
-                    >
-                      Detaylar
-                    </Button>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
 
-          <div className="flex justify-center gap-2">
+                <div className="flex justify-between items-center text-sm">
+                  <div className="flex items-center gap-4">
+                    <span className="text-muted-foreground">
+                      by {entry.author}
+                    </span>
+                    <button
+                      onClick={() => handleLike(entry._id)}
+                      className="flex items-center gap-1 text-muted-foreground hover:text-primary"
+                    >
+                      <Heart className="h-4 w-4" />
+                      {entry.likes}
+                    </button>
+                    <span className="flex items-center gap-1 text-muted-foreground">
+                      <MessageCircle className="h-4 w-4" />
+                      {entry.comments.length}
+                    </span>
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    onClick={() => router.push(`/forum/entry/${entry._id}`)}
+                  >
+                    Detaylar
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+
+          <div className="flex justify-center gap-4 mt-8">
             <Button
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage === 1 || loading}
+              variant="outline"
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
             >
               Önceki
             </Button>
-            <span className="py-2 px-4">
+            <span className="py-2">
               Sayfa {currentPage} / {totalPages}
             </span>
             <Button
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages || loading}
+              variant="outline"
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
             >
               Sonraki
             </Button>
           </div>
-        </>
+        </div>
       )}
     </div>
-  );
-};
-
-export default ForumPage;
+  )
+}

@@ -9,6 +9,7 @@ export interface Comment {
   replies: Comment[]
   parentId?: string
   depth: number
+  likedBy?: string[]
 }
 
 export interface ForumEntry {
@@ -19,12 +20,14 @@ export interface ForumEntry {
   uploadTime: string
   likes: number
   comments: Comment[]
+  likedBy?: string[]
+  tags?: string[]
 }
 
-interface ForumResponse {
-  posts: ForumEntry[];
-  totalPages: number;
-  currentPage: number;
+export interface ForumResponse {
+  posts: ForumEntry[]
+  totalPages: number
+  currentPage: number
+  totalEntries: number
 }
 
-export type { ForumResponse};

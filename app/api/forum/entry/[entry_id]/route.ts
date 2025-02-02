@@ -1,10 +1,8 @@
 import { NextResponse } from 'next/server'
-import clientPromise from '@/lib/database'
 import { ObjectId } from 'mongodb'
+import clientPromise from '@/lib/database'
 import jwt from 'jsonwebtoken'
 import type { Comment, ForumEntry } from '@/types/forum'
-
-import 'dotenv/config';
 
 export async function GET(
   request: Request,
@@ -13,7 +11,7 @@ export async function GET(
   try {
     if (!ObjectId.isValid(params.entry_id)) {
       return NextResponse.json(
-        { error: 'Invalid entry ID format' },
+        { error: 'Geçersiz gönderi ID' },
         { status: 400 }
       )
     }
@@ -27,12 +25,12 @@ export async function GET(
 
     if (!entry) {
       return NextResponse.json(
-        { error: 'Entry not found' },
+        { error: 'Gönderi bulunamadı' },
         { status: 404 }
       )
     }
 
-    // Convert ObjectId to string for JSON serialization
+    // Convert ObjectIds to strings for JSON serialization
     const serializedEntry = {
       ...entry,
       _id: entry._id.toString(),
@@ -49,15 +47,9 @@ export async function GET(
     return NextResponse.json(serializedEntry)
 
   } catch (error) {
-    console.error('Get entry error:', error)
-    if (error instanceof Error && error.name === 'BSONTypeError') {
-      return NextResponse.json(
-        { error: 'Invalid ID format' },
-        { status: 400 }
-      )
-    }
+    console.error('Entry fetch error:', error)
     return NextResponse.json(
-      { error: 'Server error' },
+      { error: 'Gönderi yüklenirken bir hata oluştu' },
       { status: 500 }
     )
   }
@@ -68,15 +60,27 @@ export async function POST(
   { params }: { params: { entry_id: string } }
 ) {
   try {
-    const { content, parentId, depth = 0 } = await request.json()
     const token = request.headers.get('Authorization')?.split(' ')[1]
 
-    if (!token || depth > 3) {
-      return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
+    if (!token || !ObjectId.isValid(params.entry_id)) {
+      return NextResponse.json(
+        { error: 'Geçersiz istek' },
+        { status: 400 }
+      )
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
-      userId: string, username: string
+      userId: string
+      username: string
+    }
+
+    const { content, parentId, depth = 0 } = await request.json()
+
+    if (!content?.trim() || depth > 3) {
+      return NextResponse.json(
+        { error: 'Geçersiz yorum içeriği' },
+        { status: 400 }
+      )
     }
 
     const client = await clientPromise
@@ -89,8 +93,8 @@ export async function POST(
       uploadTime: new Date().toISOString(),
       likes: 0,
       replies: [],
-      parentId,
-      depth
+      depth,
+      parentId
     }
 
     let result
@@ -119,12 +123,25 @@ export async function POST(
     }
 
     if (!result) {
-      return NextResponse.json({ error: 'Entry not found' }, { status: 404 })
+      return NextResponse.json(
+        { error: 'Gönderi bulunamadı' },
+        { status: 404 }
+      )
     }
 
     return NextResponse.json(newComment)
 
   } catch (error) {
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    console.error('Comment error:', error)
+    if (error instanceof jwt.JsonWebTokenError) {
+      return NextResponse.json(
+        { error: 'Geçersiz token' },
+        { status: 401 }
+      )
+    }
+    return NextResponse.json(
+      { error: 'Sunucu hatası' },
+      { status: 500 }
+    )
   }
 }

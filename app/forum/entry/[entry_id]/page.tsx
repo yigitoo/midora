@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { useAuth } from "@/app/services/AuthProvider"
 import { useToast } from "@/components/ui/use-toast"
-import { Loader2, MessageCircle, ArrowLeft, Heart } from "lucide-react"
+import { ArrowLeft, Heart, MessageCircle, Loader2 } from "lucide-react"
 
 interface Comment {
   _id: string
@@ -33,12 +33,12 @@ interface ForumEntry {
 const CommentComponent = ({
   comment,
   entryId,
-  onCommentUpdate,
+  onReply,
   depth = 0
 }: {
   comment: Comment
   entryId: string
-  onCommentUpdate: () => Promise<void>
+  onReply: () => Promise<void>
   depth: number
 }) => {
   const [showReplyInput, setShowReplyInput] = useState(false)
@@ -48,7 +48,7 @@ const CommentComponent = ({
   const { toast } = useToast()
 
   const handleReply = async () => {
-    if (!replyContent.trim() || depth >= 2) return
+    if (!replyContent.trim() || depth >= 3) return
 
     try {
       setIsSubmitting(true)
@@ -61,7 +61,7 @@ const CommentComponent = ({
         },
         body: JSON.stringify({
           content: replyContent,
-          parentCommentId: comment._id,
+          parentId: comment._id,
           depth: depth + 1
         }),
       })
@@ -70,7 +70,7 @@ const CommentComponent = ({
 
       setReplyContent("")
       setShowReplyInput(false)
-      await onCommentUpdate()
+      await onReply()
 
       toast({
         title: "Başarılı",
@@ -90,7 +90,7 @@ const CommentComponent = ({
   return (
     <div className="space-y-2">
       <div className={`bg-muted/50 p-4 rounded-lg border-l-2
-        ${depth > 0 ? 'border-primary/20' : 'border-transparent'}`}>
+        ${depth > 0 ? `border-primary/${20 + depth * 20}` : 'border-transparent'}`}>
         <div className="flex justify-between items-center mb-2">
           <span className="font-medium">{comment.author}</span>
           <span className="text-sm text-muted-foreground">
@@ -98,7 +98,7 @@ const CommentComponent = ({
           </span>
         </div>
         <p className="mb-2">{comment.content}</p>
-        {isLoggedIn && depth < 2 && (
+        {isLoggedIn && depth < 3 && (
           <Button
             variant="ghost"
             size="sm"
@@ -137,7 +137,7 @@ const CommentComponent = ({
               key={reply._id}
               comment={reply}
               entryId={entryId}
-              onCommentUpdate={onCommentUpdate}
+              onReply={onReply}
               depth={depth + 1}
             />
           ))}
@@ -147,15 +147,16 @@ const CommentComponent = ({
   )
 }
 
-export default function EntryDetailPage() {
+export default function EntryPage() {
   const params = useParams()
   const router = useRouter()
   const { isLoggedIn } = useAuth()
   const { toast } = useToast()
   const [entry, setEntry] = useState<ForumEntry | null>(null)
+  const [loading, setLoading] = useState(true)
   const [newComment, setNewComment] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const [isLiked, setIsLiked] = useState(false);
 
   const fetchEntry = async () => {
     try {
@@ -168,7 +169,7 @@ export default function EntryDetailPage() {
       toast({
         variant: "destructive",
         title: "Hata",
-        description: "Gönderi yüklenirken bir hata oluştu"
+        description: "Gönderi yüklenemedi"
       })
       router.push('/forum')
     } finally {
@@ -176,9 +177,42 @@ export default function EntryDetailPage() {
     }
   }
 
-  useEffect(() => {
-    fetchEntry()
-  }, [params.entry_id])
+  const handleLike = async () => {
+    if (!isLoggedIn || !entry) return
+
+    try {
+      const token = localStorage.getItem("token")
+      const response = await fetch(`/api/forum/entry/${entry._id}/like`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (response.status === 400) {
+        toast({
+          variant: "destructive",
+          title: "Hata",
+          description: "Gönderi yok veya zaten beğenildi."
+        })
+        setIsLiked(true);
+      }
+      if (!response.ok) throw new Error()
+
+      setEntry(prev => prev ? { ...prev, likes: prev.likes + 1 } : null)
+
+      toast({
+        title: "Başarılı",
+        description: "Gönderi beğenildi"
+      })
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Hata",
+        description: "Beğeni eklenemedi"
+      })
+    }
+  }
 
   const handleAddComment = async () => {
     if (!newComment.trim()) return
@@ -218,6 +252,10 @@ export default function EntryDetailPage() {
     }
   }
 
+  useEffect(() => {
+    fetchEntry()
+  }, [params.entry_id])
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -232,28 +270,48 @@ export default function EntryDetailPage() {
     <div className="container mx-auto py-8">
       <Button
         variant="ghost"
-        className="mb-4"
         onClick={() => router.back()}
+        className="mb-6"
       >
         <ArrowLeft className="h-4 w-4 mr-2" />
-        Geri Dön
+        Geri
       </Button>
 
       <Card>
         <CardContent className="p-6">
-          <h1 className="text-2xl font-bold mb-4">{entry.title}</h1>
-          <p className="text-gray-700 mb-6">{entry.content}</p>
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold mb-4">{entry.title}</h1>
+            <p className="text-muted-foreground mb-4">{entry.content}</p>
+
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <span>Yazar: {entry.author}</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLike}
+                disabled={!isLoggedIn}
+                className="flex items-center gap-1"
+              >
+                <Heart className="h-4 w-4" />
+                {entry.likes}
+              </Button>
+              <span className="flex items-center gap-1">
+                <MessageCircle className="h-4 w-4" />
+                {entry.comments.length}
+              </span>
+            </div>
+          </div>
 
           <div className="border-t pt-6">
             <h2 className="text-xl font-semibold mb-4">Yorumlar</h2>
 
             {isLoggedIn && (
-              <div className="space-y-2 mb-6">
+              <div className="mb-6">
                 <Textarea
                   placeholder="Yorumunuzu yazın..."
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
-                  className="min-h-[100px]"
+                  className="mb-2"
                 />
                 <Button
                   onClick={handleAddComment}
@@ -274,7 +332,7 @@ export default function EntryDetailPage() {
                   key={comment._id}
                   comment={comment}
                   entryId={entry._id}
-                  onCommentUpdate={fetchEntry}
+                  onReply={fetchEntry}
                   depth={0}
                 />
               ))}
