@@ -1,64 +1,165 @@
-import React from 'react';
+"use client";
 
-interface ForumEntry {
-  id: number;
-  title: string;
-  content: string;
-  author: string;
-  uploadTime: Date;
-}
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/app/services/AuthProvider";
+import { Search, Loader2, MessageCircle } from "lucide-react";
+import debounce from "lodash/debounce";
 
-const mockEntries: ForumEntry[] = [
-  {
-    id: 1,
-    title: 'İlk Gönderi',
-    content: 'Bu ilk gönderinin içeriği.',
-    author: 'User1',
-    uploadTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2) // 2 days ago
-  },
-  {
-    id: 2,
-    title: 'İkinci Gönderi',
-    content: 'Bu ikinci gönderinin içeriği.',
-    author: 'User2',
-    uploadTime: new Date(Date.now() - 1000 * 60 * 60 * 12) // 12 hours ago
-  },
-  { id: 3, title: 'Third Entry', content: 'This is the third entry content.', author: 'User3', uploadTime: new Date() },
-  { id: 4, title: 'Fourth Entry', content: 'This is the fourth entry content.', author: 'User4', uploadTime: new Date() },
-  { id: 5, title: 'Fifth Entry', content: 'This is the fifth entry content.', author: 'User5', uploadTime: new Date() },
-  { id: 6, title: 'Sixth Entry', content: 'This is the sixth entry content.', author: 'User6', uploadTime: new Date() },
-  { id: 7, title: 'Seventh Entry', content: 'This is the seventh entry content.', author: 'User7', uploadTime: new Date() },
-  { id: 8, title: 'Eighth Entry', content: 'This is the eighth entry content.', author: 'User8', uploadTime: new Date() },
-  { id: 9, title: 'Ninth Entry', content: 'This is the ninth entry content.', author: 'User9', uploadTime: new Date() },
-  { id: 10, title: 'Tenth Entry', content: 'This is the tenth entry content.', author: 'User10', uploadTime: new Date() },
-];
+import type { Comment, ForumEntry, ForumResponse } from "@/types/forum";
+import { useRouter } from "next/navigation";
 
-const formatDate = (date: Date): string => {
-  return date.toLocaleString('tr-TR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+const formatDate = (date: string): string => {
+  return new Date(date).toLocaleString("tr-TR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 };
 
-const ForumPage: React.FC = () => {
+const ForumPage = () => {
+  const [entries, setEntries] = useState<ForumEntry[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const router = useRouter();
+
+  const fetchEntries = async (page: number, search: string = "") => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `/api/forum?page=${page}&search=${encodeURIComponent(search)}`
+      );
+      if (!response.ok) throw new Error("Aradığınız göneriler bulunamadı.");
+
+      const data: ForumResponse = await response.json();
+      setEntries(data.posts);
+      setTotalPages(data.totalPages);
+      setCurrentPage(data.currentPage);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Bir hata oluştu");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const debouncedSearch = debounce((value: string) => {
+    setCurrentPage(1);
+    fetchEntries(1, value);
+  }, 500);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    debouncedSearch(e.target.value);
+  };
+
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, []);
+
+  useEffect(() => {
+    fetchEntries(currentPage, searchTerm);
+  }, [currentPage]);
+
+  if (error) {
+    setTimeout(() => (window.location.href = "/forum"), 1500);
+    return <div className="text-center text-red-500 py-8">{error}</div>;
+  }
+
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-6">Forum Ana Sayfası</h1>
-      <ul className="space-y-4">
-        {mockEntries.map(entry => (
-          <li key={entry.id} className="border p-4 rounded-lg shadow-sm">
-            <h2 className="text-xl font-semibold mb-2">{entry.title}</h2>
-            <p className="text-gray-700 mb-2">{entry.content}</p>
-            <div className="flex justify-between text-sm text-gray-500">
-              <p><strong>Yazar:</strong> {entry.author}</p>
-              <p><strong>Yükleme Tarihi:</strong> {formatDate(entry.uploadTime)}</p>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <h1 className="text-center text-3xl font-bold mb-6">Forum Ana Sayfası</h1>
+
+      <div className="max-w-md mx-auto mb-8">
+        <div className="relative">
+          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Forum gönderilerinde ara..."
+            value={searchTerm}
+            onChange={handleSearch}
+            className="pl-10"
+          />
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-8">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      ) : (
+        <>
+          <ul className="space-y-4 mb-8">
+            {entries.map((entry) => (
+              <li
+                key={entry._id.toString()}
+                className="border p-4 rounded-lg shadow-sm"
+              >
+                <h2 className="text-xl font-semibold mb-2">{entry.title}</h2>
+                <p className="text-gray-700 mb-2 line-clamp-3">
+                  {entry.content}
+                </p>
+                <div className="flex justify-between items-center text-sm text-gray-500">
+                  <div className="flex items-center gap-4">
+                    <span
+                      className="cursor-pointer"
+                      onClick={() => window.open("/user/" + entry.author)}
+                    >
+                      <strong>Yazar: </strong>
+                      {entry.author}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <MessageCircle className="h-4 w-4" />
+                      {entry.comments?.length || 0}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span>
+                      {formatDate(
+                        new Date(entry.uploadTime).toLocaleDateString("tr-TR")
+                      )}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => router.push(`/forum/entry/${entry._id}`)}
+                    >
+                      Detaylar
+                    </Button>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          <div className="flex justify-center gap-2">
+            <Button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1 || loading}
+            >
+              Önceki
+            </Button>
+            <span className="py-2 px-4">
+              Sayfa {currentPage} / {totalPages}
+            </span>
+            <Button
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages || loading}
+            >
+              Sonraki
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
