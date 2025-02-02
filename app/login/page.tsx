@@ -21,7 +21,7 @@ export default function LoginPage() {
     try {
       await login(email, password)
     } catch (error) {
-      setError("Giriş başarısız. Lütfen bilgilerinizi kontrol edin.")
+      setError(error.message || "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.")
     }
   }
 

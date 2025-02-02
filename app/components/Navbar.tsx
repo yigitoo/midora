@@ -29,7 +29,9 @@ export const Navbar = () => {
     isLoggedIn ? (
       <div className="flex items-center space-x-4">
         <Link href="/profile">
-          <Button variant="ghost" className="text-white hover:text-gray-300">
+          <Button
+            className="nav-link hover:opacity-80 transition-opacity px-3 py-2"
+          >
             {user?.username || user?.name || "Profil"}
           </Button>
         </Link>
@@ -46,7 +48,9 @@ export const Navbar = () => {
     ) : (
       <div className="flex items-center space-x-4">
         <Link href="/login">
-          <Button variant="ghost" className="text-white hover:text-gray-300">
+          <Button
+            className="nav-link hover:opacity-80 transition-opacity px-3 py-2"
+          >
             Giriş yap
           </Button>
         </Link>

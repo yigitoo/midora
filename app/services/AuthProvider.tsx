@@ -67,14 +67,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await res.json()
 
       if (res.status === 403) {
-        const suspensionDate = new Date(data.suspendedUntil).toLocaleDateString()
+        const suspensionDate = new Date(data.suspendedUntil).toLocaleDateString('tr-TR')
         toast({
           title: "Account Suspended",
           description: `${data.suspensionReason}. Suspended until: ${suspensionDate}`,
           variant: "destructive",
           duration: new Date(data.suspendedUntil).getTime() - Date.now(),
         })
-        throw new Error('Hesap Cezalı veya Askıya Alınmış')
+        throw new Error('Hesap Cezalı veya Askıya Alınmış.\nCeza Nedeni: ' + data.suspensionReason + ' | Askıya alınma tarihi: '+ (new Date(data.suspendedAt)).toLocaleDateString('tr-TR') +  ' | Açılacak Tarih: ' + suspensionDate)
       }
 
       if (!res.ok) {

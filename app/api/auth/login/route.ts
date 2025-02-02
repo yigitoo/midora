@@ -14,6 +14,7 @@ export async function POST(request: Request) {
     if (isSuspended) {
       return NextResponse.json({
         error: 'Account suspended',
+        suspendedAt: isSuspended.createdAt,
         suspensionReason: isSuspended.reason,
         suspendedUntil: isSuspended.until
       }, { status: 403 })
@@ -23,7 +24,7 @@ export async function POST(request: Request) {
     const user = await db.collection('users').findOne({ email })
     if (!user) {
       return NextResponse.json(
-        { error: 'Invalid credentials' },
+        { error: 'Yanlış bilgiler girildi. Bilgilerinizi kontrol ediniz.' },
         { status: 401 }
       )
     }
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
     const isValid = await bcrypt.compare(password, user.password)
     if (!isValid) {
       return NextResponse.json(
-        { error: 'Invalid credentials' },
+        { error: 'Yanlış bilgiler girildi. Bilgilerinizi kontrol ediniz.' },
         { status: 401 }
       )
     }
