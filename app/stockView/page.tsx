@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { motion } from "framer-motion"
 import { SearchBox } from "@/components/SearchBox"
 import { StockResultsList } from "@/components/StockResultsList"
@@ -57,6 +57,7 @@ export default function Home() {
   }
 
   return (
+    <Suspense>
     <main className="min-h-screen bg-secondary">
       <div className="max-w-6xl mx-auto">
         <motion.div
@@ -91,6 +92,7 @@ export default function Home() {
         )}
       </div>
     </main>
+    </Suspense>
   )
 }
 
