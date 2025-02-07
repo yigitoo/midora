@@ -13,7 +13,7 @@ import {
 } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/components/ui/use-toast"
-import { URL_MAP } from "@/lib/urls"
+import { API_URL, URL_MAP } from "@/lib/urls"
 
 interface UserProfile {
   name: string
@@ -94,7 +94,7 @@ export default function UserProfilePage() {
         }
 
         setLoading(true)
-        const response = await fetch(`/api/users/${params.username}`)
+        const response = await fetch(`${API_URL.userAuthApiEndpoint}/${params.username}`)
 
         if (!response.ok) {
           throw new Error("Kullanıcı bulunamadı")
@@ -121,7 +121,7 @@ export default function UserProfilePage() {
   const handleLike = async (postId: string) => {
     try {
       const token = localStorage.getItem("token")
-      const response = await fetch(`/api/forum/entry/${postId}`, {
+      const response = await fetch(`${API_URL.forumEntryApiEndpoint}/${postId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -196,7 +196,7 @@ export default function UserProfilePage() {
   const fetchUserComments = async () => {
     try {
       setLoadingComments(true)
-      const response = await fetch(`/api/user/${params.username}/comments`)
+      const response = await fetch(`${API_URL.userAuthApiEndpoint}/${params.username}/comments`)
       if (!response.ok) throw new Error()
       const data = await response.json()
       setComments(data)
@@ -214,7 +214,7 @@ export default function UserProfilePage() {
   const fetchUserLikes = async () => {
     try {
       setLoadingLikes(true)
-      const response = await fetch(`/api/user/${params.username}/likes`)
+      const response = await fetch(`${API_URL.userAuthApiEndpoint}/${params.username}/likes`)
       if (!response.ok) throw new Error()
       const data = await response.json()
       setLikes(data)
@@ -431,7 +431,7 @@ export default function UserProfilePage() {
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start mb-2">
                       <h3 className="font-medium hover:text-primary cursor-pointer"
-                        onClick={() => router.push(`/forum/entry/${comment.entryId}`)}
+                        onClick={() => router.push(`${URL_MAP.forumEntryPage}/${comment.entryId}`)}
                       >
                         {comment.entryTitle}
                       </h3>
@@ -461,7 +461,7 @@ export default function UserProfilePage() {
                   <CardContent className="p-4">
                     <div className="flex justify-between items-center">
                       <h3 className="font-medium hover:text-primary cursor-pointer"
-                        onClick={() => router.push(`/forum/entry/${like.entryId}`)}
+                        onClick={() => router.push(`${URL_MAP.forumEntryPage}/${like.entryId}`)}
                       >
                         {like.entryTitle}
                       </h3>

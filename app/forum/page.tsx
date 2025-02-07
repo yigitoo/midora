@@ -9,7 +9,7 @@ import { useAuth } from "@/app/services/AuthProvider"
 import { Search, Loader2, MessageCircle, Heart } from "lucide-react"
 import debounce from "lodash/debounce"
 import type { ForumEntry, ForumResponse } from "@/types/forum"
-import { URL_MAP } from "@/lib/urls"
+import { API_URL, URL_MAP } from "@/lib/urls"
 
 const ENTRIES_PER_PAGE = 20
 
@@ -26,7 +26,7 @@ export default function ForumPage() {
     try {
       setLoading(true)
       const response = await fetch(
-        `/api/forum?page=${page}&limit=${ENTRIES_PER_PAGE}&search=${encodeURIComponent(search)}`
+        `${API_URL.forumApiEndpoint}?page=${page}&limit=${ENTRIES_PER_PAGE}&search=${encodeURIComponent(search)}`
       )
       if (!response.ok) throw new Error()
       const data: ForumResponse = await response.json()
@@ -57,7 +57,7 @@ export default function ForumPage() {
 
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`/api/forum/entry/${entryId}/like`, {
+      const response = await fetch(`${API_URL.forumEntryApiEndpoint}/${entryId}/like`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`
@@ -132,7 +132,7 @@ export default function ForumPage() {
 
                   <Button
                     variant="outline"
-                    onClick={() => router.push(`/forum/entry/${entry._id}`)}
+                    onClick={() => router.push(`${URL_MAP.forumEntryPage}/${entry._id}`)}
                   >
                     Detaylar
                   </Button>

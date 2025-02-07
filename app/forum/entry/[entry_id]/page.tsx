@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useAuth } from "@/app/services/AuthProvider"
 import { useToast } from "@/components/ui/use-toast"
 import { ArrowLeft, Heart, MessageCircle, Loader2 } from "lucide-react"
-import { URL_MAP } from "@/lib/urls"
+import { API_URL, URL_MAP } from "@/lib/urls"
 
 interface Comment {
   _id: string
@@ -54,7 +54,7 @@ const CommentComponent = ({
     try {
       setIsSubmitting(true)
       const token = localStorage.getItem("token")
-      const response = await fetch(`/api/forum/entry/${entryId}/comment`, {
+      const response = await fetch(`${API_URL.forumEntryApiEndpoint}/${entryId}/comment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -162,7 +162,7 @@ export default function EntryPage() {
   const fetchEntry = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`/api/forum/entry/${params.entry_id}`)
+      const response = await fetch(`${API_URL.forumEntryApiEndpoint}/${params.entry_id}`)
       if (!response.ok) throw new Error()
       const data = await response.json()
       setEntry(data)
@@ -183,7 +183,7 @@ export default function EntryPage() {
 
     try {
       const token = localStorage.getItem("token")
-      const response = await fetch(`/api/forum/entry/${entry._id}/like`, {
+      const response = await fetch(`${API_URL.forumEntryApiEndpoint}/${entry._id}/like`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -221,7 +221,7 @@ export default function EntryPage() {
     try {
       setIsSubmitting(true)
       const token = localStorage.getItem("token")
-      const response = await fetch(`/api/forum/entry/${params.entry_id}/comment`, {
+      const response = await fetch(`${API_URL.forumEntryApiEndpoint}/${params.entry_id}/comment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import clientPromise from '@/lib/database'
 import bcrypt from 'bcryptjs'
 import { ObjectId } from 'mongodb'
+import { IMAGE_URL, URL_MAP } from '@/lib/urls'
 
 export async function POST(request: Request) {
   try {
@@ -36,6 +37,10 @@ export async function POST(request: Request) {
       name,
       username,
       email,
+      postCount: 0,
+      likeCount: 0,
+      commentCount: 0,
+      avatar: IMAGE_URL.randomAvatarGenerator + username,
       password: hashedPassword,
       createdAt: new Date(),
       updatedAt: new Date()
