@@ -1,3 +1,5 @@
+'use client'
+
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { Slider } from "@/components/ui/slider"
