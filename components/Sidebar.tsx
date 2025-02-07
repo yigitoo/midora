@@ -26,11 +26,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   return (
     <div
       className={cn(
-        "fixed left-0 top-24 h-[calc(100vh-6rem)] bg-secondary transition-all duration-300 ease-in-out z-30",
-        isOpen ? (isCollapsed ? "w-20" : "w-64") : "w-0"
+        "hidden md:flex fixed left-0 top-24 h-[calc(100vh-6rem)] bg-secondary transition-all duration-300 ease-in-out z-30",
+        isOpen ? (isCollapsed ? "w-20" : "w-64") : "w-0",
+        "border-r shadow-md"
       )}
+      style={{
+        marginRight: isOpen ? (isCollapsed ? "5rem" : "16rem") : "0",
+      }}
     >
-      <nav className={cn("p-4 space-y-2", isOpen ? "" : "hidden")}>
+      <nav className={cn(cn("p-4 space-y-2", isOpen ? "" : "hidden"))}>
         <Button
           variant="ghost"
           size="icon"
@@ -43,7 +47,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               isCollapsed ? "" : "rotate-180"
             )}
           />
-                   {!isCollapsed && (
+          {!isCollapsed && (
             <motion.span
               className="p-2"
               initial={{ opacity: 0, x: -5 }}
@@ -103,7 +107,6 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
   text,
   isCollapsed,
 }) => {
-
   return (
     <Link href={href}>
       <motion.div
@@ -116,7 +119,8 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
           className={cn(
             "w-full justify-start hover:bg-primary hover:text-secondary",
             "px-4"
-          )}>
+          )}
+        >
           <Icon className="h-5 w-5" />
           {!isCollapsed && (
             <motion.span
@@ -129,7 +133,6 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
             </motion.span>
           )}
         </Button>
-
       </motion.div>
     </Link>
   );

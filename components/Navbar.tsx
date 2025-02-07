@@ -10,8 +10,14 @@ import { Search, X, Menu } from "lucide-react"
 import { useAuth } from "../app/services/AuthProvider"
 import { usePathname } from "next/navigation"
 import { IMAGE_URL, URL_MAP } from "@/lib/urls"
+import { useSidebarStore } from "@/lib/store"
+import React from 'react';
 
-export const Navbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
+interface NavbarProps {
+  toggleSidebar: () => void;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { isLoggedIn, logout, user } = useAuth()
