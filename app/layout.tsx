@@ -35,8 +35,11 @@ export default function RootLayout({
           type="image/jpeg"
           sizes="any"
         />
+        <title>
+          💸Midora - Finansal Hizmetler
+        </title>
       </head>
-      <body className={inter.className}>
+      <body className={inter.className + ' bg-secondary'}>
         <AuthProvider>
           <ThemeProvider>
             <Navbar toggleSidebar={toggleOpen} />
@@ -44,7 +47,11 @@ export default function RootLayout({
             <main
               className={cn(
                 "md:ml-0 transition-all duration-300 ease-in-out",
-                isOpen ? (isCollapsed ? "ml-5" : "ml-16") : "ml-0"
+                isOpen
+                  ? isCollapsed
+                    ? "ml-5 md:ml-16 md:w-[calc(100vw - 4rem)] lg:w-[calc(100vw - 16rem)]"
+                    : "ml-16md:w-[calc(100vw - 4rem)] lg:w-[calc(100vw - 16rem)]"
+                  : "ml-0 w-full"
               )}
             >
               {children}

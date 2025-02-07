@@ -12,9 +12,11 @@ import {
   FileText,
   Info,
   Settings,
+  DollarSign
 } from "lucide-react";
 import { URL_MAP } from "@/lib/urls";
 import { motion } from "framer-motion";
+import { Separator } from "./ui/separator";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -27,12 +29,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
     <div
       className={cn(
         "hidden md:flex fixed left-0 top-24 h-[calc(100vh-6rem)] bg-secondary transition-all duration-300 ease-in-out z-30",
-        isOpen ? (isCollapsed ? "w-20" : "w-64") : "w-0",
+        isOpen ? (isCollapsed ? "w-20" : "w-50") : "w-0",
         "border-r shadow-md"
       )}
-      style={{
-        marginRight: isOpen ? (isCollapsed ? "5rem" : "16rem") : "0",
-      }}
+      style={{}}
     >
       <nav className={cn(cn("p-4 space-y-2", isOpen ? "" : "hidden"))}>
         <Button
@@ -43,7 +43,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
         >
           <ChevronRight
             className={cn(
-              "h-4 w-4 transition-transform",
+              "h-6 w-6 transition-transform",
               isCollapsed ? "" : "rotate-180"
             )}
           />
@@ -58,7 +58,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
             </motion.span>
           )}
         </Button>
-        <hr />
+
+        <Separator className="my-4 h-1 rounded-lg bg-primary"/>
+
         <SidebarItem
           href={URL_MAP.homePage}
           icon={Home}
@@ -89,6 +91,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
           text="Profil"
           isCollapsed={isCollapsed}
         />
+        <SidebarItem
+          href={URL_MAP.stockViewPage}
+          icon={DollarSign}
+          text="Hisse Görüntüle"
+          isCollapsed={isCollapsed}
+        />
       </nav>
     </div>
   );
@@ -110,7 +118,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
   return (
     <Link href={href}>
       <motion.div
-        className="overflow-hidden relative"
+        className="overflow-hidden relative mt-2"
         style={{ width: "100%" }}
         whileHover={{ scale: 1.05 }}
       >

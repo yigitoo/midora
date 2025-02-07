@@ -8,7 +8,8 @@ export const URL_MAP = {
   aboutPage: "/about",
   founderYigitPage: "/about/yigit",
   founderCaganPage: "/about/cagan",
-  forumEntryPage: "/forum/entry/"
+  forumEntryPage: "/forum/entry/",
+  stockViewPage: "/stockView"
 }
 
 export const IMAGE_URL = {
