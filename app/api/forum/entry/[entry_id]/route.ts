@@ -4,6 +4,8 @@ import clientPromise from '@/lib/database'
 import jwt from 'jsonwebtoken'
 import type { Comment, ForumEntry } from '@/types/forum'
 
+import { DEPTH_LIMIT } from '@/types/forum'
+
 export async function GET(
   request: Request,
   { params }: { params: { entry_id: string } }
@@ -76,7 +78,7 @@ export async function POST(
 
     const { content, parentId, depth = 0 } = await request.json()
 
-    if (!content?.trim() || depth > 3) {
+    if (!content?.trim() || depth > DEPTH_LIMIT) {
       return NextResponse.json(
         { error: 'Geçersiz yorum içeriği' },
         { status: 400 }

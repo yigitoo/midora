@@ -19,7 +19,7 @@ export default function ForumPage() {
   const [totalPages, setTotalPages] = useState(1)
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
-  const { isLoggedIn } = useAuth()
+  const { isLoggedIn, user } = useAuth()
   const router = useRouter()
 
   const fetchEntries = async (page: number, search: string = "") => {
@@ -64,12 +64,23 @@ export default function ForumPage() {
         }
       })
 
+      if (response.status === 400) {
+        // Already liked
+        return
+      }
+
       if (!response.ok) throw new Error()
+
+      const data = await response.json()
 
       setEntries(prev =>
         prev.map(entry =>
           entry._id === entryId
-            ? { ...entry, likes: entry.likes + 1 }
+            ? {
+                ...entry,
+                likes: data.likes,
+                likedBy: [...(entry.likedBy || []), user?.username]
+              }
             : entry
         )
       )
@@ -77,6 +88,9 @@ export default function ForumPage() {
       console.error("Failed to like entry:", error)
     }
   }
+
+  const isLikedByUser = (entry: ForumEntry) =>
+    isLoggedIn && entry.likedBy?.includes(user?.username || '')
 
   useEffect(() => {
     fetchEntries(currentPage, searchTerm)
@@ -119,9 +133,13 @@ export default function ForumPage() {
                     </span>
                     <button
                       onClick={() => handleLike(entry._id)}
-                      className="flex items-center gap-1 text-muted-foreground hover:text-primary"
+                      disabled={!isLoggedIn || isLikedByUser(entry)}
+                      className={`flex items-center gap-1 text-muted-foreground
+                        ${isLikedByUser(entry) ? 'text-primary' : 'hover:text-primary'}`}
                     >
-                      <Heart className="h-4 w-4" />
+                      <Heart
+                        className={`h-4 w-4 ${isLikedByUser(entry) ? 'fill-current' : ''}`}
+                      />
                       {entry.likes}
                     </button>
                     <span className="flex items-center gap-1 text-muted-foreground">

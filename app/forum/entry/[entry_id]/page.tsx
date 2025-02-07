@@ -10,6 +10,8 @@ import { useToast } from "@/components/ui/use-toast"
 import { ArrowLeft, Heart, MessageCircle, Loader2 } from "lucide-react"
 import { API_URL, URL_MAP } from "@/lib/urls"
 
+import { DEPTH_LIMIT } from '@/types/forum'
+
 interface Comment {
   _id: string
   content: string
@@ -49,7 +51,7 @@ const CommentComponent = ({
   const { toast } = useToast()
 
   const handleReply = async () => {
-    if (!replyContent.trim() || depth >= 3) return
+    if (!replyContent.trim() || depth >= DEPTH_LIMIT) return
 
     try {
       setIsSubmitting(true)

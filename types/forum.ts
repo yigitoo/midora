@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb"
 
+export const DEPTH_LIMIT = 5;
 export interface Comment {
   _id: string
   content: string
@@ -20,7 +21,7 @@ export interface ForumEntry {
   uploadTime: string
   likes: number
   comments: Comment[]
-  likedBy?: string[]
+  likedBy: string[]
   tags?: string[]
 }
 
