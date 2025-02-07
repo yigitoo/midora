@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, Suspense } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { SearchBox } from "@/components/SearchBox"
 import { StockResultsList } from "@/components/StockResultsList"
@@ -8,10 +8,10 @@ import { StockDetails } from "@/components/StockDetails"
 import { TopStocks } from "@/components/TopStocks"
 import { StockFilters, type StockFilters as FilterType } from "@/components/StockFilters"
 import { searchStocks, getStockDetails, getTopStocks, filterStocks, type Stock } from "@/lib/mockStockApi"
-import { removeElementsByClass } from "@/lib/utils"
+import { cn, removeElementsByClass } from "@/lib/utils"
 
 
-export default function Home() {
+export default function StockViewPage() {
   const [isSearchSmall, setIsSearchSmall] = useState(false)
   const [searchResults, setSearchResults] = useState<Stock[]>([])
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null)
@@ -25,6 +25,9 @@ export default function Home() {
 
   useEffect(() => {
     setTopStocks(getTopStocks())
+    if(!isSearchSmall) {
+      setSelectedStock(null)
+    }
   }, [])
 
   const handleSearch = (query: string) => {
@@ -52,12 +55,8 @@ export default function Home() {
     setTopStocks(filteredStocks)
   }
 
-  if(!isSearchSmall) {
-    removeElementsByClass('stock-details')
-  }
 
   return (
-    <Suspense>
     <main className="min-h-screen bg-secondary">
       <div className="max-w-6xl mx-auto">
         <motion.div
@@ -86,13 +85,12 @@ export default function Home() {
           )}
         </motion.div>
         {selectedStock && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.2 }}>
+          <motion.div initial={{ opacity: 0 }} className={cn(!isSearchSmall ? "hidden" : "")} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.2 }}>
             <StockDetails stock={selectedStock} />
           </motion.div>
         )}
       </div>
     </main>
-    </Suspense>
   )
 }
 
