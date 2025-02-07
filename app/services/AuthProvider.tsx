@@ -25,7 +25,7 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(true)
   const [user, setUser] = useState(null)
   const router = useRouter()
   const { toast } = useToast()

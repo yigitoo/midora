@@ -1,38 +1,36 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Search, X, Menu } from "lucide-react";
-import { useAuth } from "../services/AuthProvider";
-import { usePathname } from "next/navigation";
-import { IMAGE_URL, URL_MAP } from "@/lib/urls";
+import { useState, useEffect } from "react"
+import Link from "next/link"
+import Image from "next/image"
+import { cn } from "@/lib/utils"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Search, X, Menu } from "lucide-react"
+import { useAuth } from "../app/services/AuthProvider"
+import { usePathname } from "next/navigation"
+import { IMAGE_URL, URL_MAP } from "@/lib/urls"
 
-export const Navbar = () => {
-  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isLoggedIn, logout, user } = useAuth();
-  const pathname = usePathname();
+export const Navbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { isLoggedIn, logout, user } = useAuth()
+  const pathname = usePathname()
 
-  const navbarHeight = "h-24"; // Define navbar height
-  const mobileMenuHeight = "max-h-[400px]";
+  const navbarHeight = "h-24"
+  const mobileMenuHeight = "max-h-[400px]"
 
   const siteLogoPath = IMAGE_URL.logoUrl
 
   useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [pathname]);
+    setIsMobileMenuOpen(false)
+  }, [])
 
   const AuthButtons = () =>
     isLoggedIn ? (
       <div className="flex items-center space-x-4">
         <Link href={URL_MAP.profilePage}>
-          <Button
-            className="nav-link hover:opacity-80 transition-opacity px-3 py-2"
-          >
+          <Button className="nav-link hover:opacity-80 transition-opacity px-3 py-2">
             {user?.username || user?.name || "Profil"}
           </Button>
         </Link>
@@ -40,7 +38,7 @@ export const Navbar = () => {
           variant="ghost"
           className="bg-red-500 block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-red-700 text-white transition-colors"
           onClick={() => {
-            logout();
+            logout()
           }}
         >
           Çıkış yap
@@ -49,11 +47,7 @@ export const Navbar = () => {
     ) : (
       <div className="flex items-center space-x-4">
         <Link href={URL_MAP.loginPage}>
-          <Button
-            className="nav-link hover:opacity-80 transition-opacity px-3 py-2"
-          >
-            Giriş yap
-          </Button>
+          <Button className="nav-link hover:opacity-80 transition-opacity px-3 py-2">Giriş yap</Button>
         </Link>
         <Link href={URL_MAP.signUpPage}>
           <Button variant="default" className="bg-blue-600 hover:bg-blue-700">
@@ -61,7 +55,7 @@ export const Navbar = () => {
           </Button>
         </Link>
       </div>
-    );
+    )
 
   const MobileAuthButtons = () =>
     isLoggedIn ? (
@@ -94,7 +88,7 @@ export const Navbar = () => {
           Kayıt ol
         </Link>
       </>
-    );
+    )
 
   return (
     <>
@@ -113,10 +107,17 @@ export const Navbar = () => {
             <div className="flex items-center">
               <Link href={URL_MAP.homePage} className="flex-shrink-0">
                 <span className="flex items-center font-bold text-xl">
-                  <Image className="mx-3" style={{
-                    borderRadius: "50%",
-                    border: "2px solid var(--color-primary-foreground)"
-                  }} width={70} height={70} src={siteLogoPath} alt="midora" />
+                  <Image
+                    className="mx-3"
+                    style={{
+                      borderRadius: "50%",
+                      border: "2px solid var(--color-primary-foreground)",
+                    }}
+                    width={70}
+                    height={70}
+                    src={siteLogoPath || "/placeholder.svg"}
+                    alt="midora"
+                  />
                   Midora
                 </span>
               </Link>
@@ -124,22 +125,13 @@ export const Navbar = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-6">
-              <Link
-                href={URL_MAP.forumPage}
-                className="nav-link hover:opacity-80 transition-opacity px-3 py-2"
-              >
+              <Link href={URL_MAP.forumPage} className="nav-link hover:opacity-80 transition-opacity px-3 py-2">
                 Forum
               </Link>
-              <Link
-                href={URL_MAP.portfoliosPage}
-                className="nav-link hover:opacity-80 transition-opacity px-3 py-2"
-              >
+              <Link href={URL_MAP.portfoliosPage} className="nav-link hover:opacity-80 transition-opacity px-3 py-2">
                 Portföyler
               </Link>
-              <Link
-                href={URL_MAP.aboutPage}
-                className="nav-link hover:opacity-80 transition-opacity px-3 py-2"
-              >
+              <Link href={URL_MAP.aboutPage} className="nav-link hover:opacity-80 transition-opacity px-3 py-2">
                 Hakkımızda
               </Link>
 
@@ -148,7 +140,7 @@ export const Navbar = () => {
                 <div
                   className={cn(
                     "flex items-center transition-all duration-300 ease-in-out",
-                    isSearchExpanded ? "w-[275px]" : "w-10"
+                    isSearchExpanded ? "w-[275px]" : "w-10",
                   )}
                 >
                   <Input
@@ -156,7 +148,7 @@ export const Navbar = () => {
                     placeholder="Search..."
                     className={cn(
                       "pr-8 transition-all duration-300 bg-gray-700 border-gray-600",
-                      !isSearchExpanded && "opacity-0 w-0 p-0"
+                      !isSearchExpanded && "opacity-0 w-0 p-0",
                     )}
                     onFocus={() => setIsSearchExpanded(true)}
                     onBlur={() => setIsSearchExpanded(false)}
@@ -167,17 +159,18 @@ export const Navbar = () => {
                     className="absolute right-0 top-0 h-full px-3 text-gray-300"
                     onClick={() => setIsSearchExpanded(!isSearchExpanded)}
                   >
-                    {isSearchExpanded ? (
-                      <X className="h-4 w-4" />
-                    ) : (
-                      <Search className="h-4 w-4" />
-                    )}
+                    {isSearchExpanded ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
                   </Button>
                 </div>
               </div>
 
               {/* Desktop Auth */}
               <AuthButtons />
+
+              {/* Sidebar Toggle */}
+              <Button variant="ghost" size="icon" className="text-gray-300" onClick={toggleSidebar}>
+                <Menu className="h-6 w-6" />
+              </Button>
             </div>
 
             {/* Mobile Menu Button */}
@@ -197,7 +190,7 @@ export const Navbar = () => {
           <div
             className={cn(
               "md:hidden transition-all duration-300 ease-in-out overflow-hidden",
-              isMobileMenuOpen ? mobileMenuHeight : "max-h-0"
+              isMobileMenuOpen ? mobileMenuHeight : "max-h-0",
             )}
           >
             <div className="px-2 pt-2 pb-3 space-y-1">
@@ -228,16 +221,8 @@ export const Navbar = () => {
               {/* Mobile Search */}
               <div className="px-3 py-2">
                 <div className="relative">
-                  <Input
-                    type="search"
-                    placeholder="Search..."
-                    className="w-full bg-gray-700 border-gray-600"
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-0 top-0 h-full px-3 text-gray-300"
-                  >
+                  <Input type="search" placeholder="Search..." className="w-full bg-gray-700 border-gray-600" />
+                  <Button variant="ghost" size="icon" className="absolute right-0 top-0 h-full px-3 text-gray-300">
                     <Search className="h-4 w-4" />
                   </Button>
                 </div>
@@ -249,7 +234,7 @@ export const Navbar = () => {
       {/* Spacer div to prevent content from going under navbar */}
       <div className={navbarHeight}></div>
     </>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar

@@ -2,7 +2,7 @@
 import React from "react";
 import Image from "next/image";
 import { Inter } from "next/font/google";
-import { ThemeToggle } from "../components/ThemeToggle";
+import { ThemeToggle } from "../../components/ThemeToggle";
 import {
   Card,
   CardContent,

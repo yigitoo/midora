@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useAuth } from "../services/AuthProvider";
 import { useRouter } from "next/navigation";
 import {
@@ -11,20 +11,33 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { ThemeToggle } from "../components/ThemeToggle";
+import { ThemeToggle } from "../../components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Edit2, Save, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { NextResponse } from "next/server";
-import clientPromise from "@/lib/database";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import { API_URL, URL_MAP } from "@/lib/urls";
 
 export default function ProfilePage() {
-  const { isLoggedIn, user } = useAuth();
   const router = useRouter();
+  const { isLoggedIn } = useAuth();
+  if (!isLoggedIn) {
+    router.push(URL_MAP.loginPage);
+    return (
+      <div
+        className="text-center font-bold"
+        style={{
+          fontSize: "1.5rem",
+          paddingTop: "10rem",
+        }}
+      >
+        Lütfen profilinizi görüntülemek için giriş yapın
+      </div>
+    );
+  }
+  const { user } = useAuth();
+
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -105,21 +118,6 @@ export default function ProfilePage() {
       setIsSaving(false);
     }
   };
-
-  if (!isLoggedIn) {
-    router.push(URL_MAP.loginPage);
-    return (
-      <div
-        className="text-center font-bold"
-        style={{
-          fontSize: "1.5rem",
-          paddingTop: "10rem",
-        }}
-      >
-        Lütfen profilinizi görüntülemek için giriş yapın
-      </div>
-    );
-  }
 
   return (
     <div className="container mx-auto py-10">
