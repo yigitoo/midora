@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import clientPromise from '@/lib/database'
 import jwt from 'jsonwebtoken'
 import { ObjectId } from 'mongodb'
 
 // GET user data
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     const token = request.headers.get('Authorization')?.split(' ')[1]
 
@@ -33,7 +33,7 @@ export async function GET(request: Request) {
 }
 
 // UPDATE user data
-export async function PUT(request: Request) {
+export async function PUT(request: NextRequest) {
   try {
     const token = request.headers.get('Authorization')?.split(' ')[1]
 

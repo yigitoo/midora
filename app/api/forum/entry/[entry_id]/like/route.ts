@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { ObjectId } from 'mongodb'
 import clientPromise from '@/lib/database'
 import jwt from 'jsonwebtoken'
@@ -7,7 +7,7 @@ import type { ForumEntry } from '@/types/forum'
 import 'dotenv/config';
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { entry_id: string } }
 ) {
   try {
