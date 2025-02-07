@@ -3,10 +3,11 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { useAuth } from "../services/AuthProvider"
+import { useAuth } from "../../services/AuthProvider"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { URL_MAP } from "@/lib/urls"
 
 export default function SignupPage() {
   const [name, setName] = useState("")
@@ -77,7 +78,7 @@ export default function SignupPage() {
             </Button>
           </form>
           <div className="mt-4 text-center">
-            <Link href="/login" className="text-sm text-primary hover:underline">
+            <Link href={URL_MAP.loginPage} className="text-sm text-primary hover:underline">
               Zaten hesabınız var mı? Giriş yapın
             </Link>
           </div>

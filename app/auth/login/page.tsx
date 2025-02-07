@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
-import { useAuth } from "../services/AuthProvider"
+import { useAuth } from "../../services/AuthProvider"
+import { URL_MAP } from "@/lib/urls"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -64,7 +65,7 @@ export default function LoginPage() {
             </Button>
             <p className="text-sm text-center text-muted-foreground">
               Hesabın yok mu?
-              <Link href="/signup" className="text-primary hover:text-primary/90 underline ml-1">
+              <Link href={URL_MAP.signUpPage} className="text-primary hover:text-primary/90 underline ml-1">
                 Kayıt ol
               </Link>
             </p>

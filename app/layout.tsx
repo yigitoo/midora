@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { AuthProvider } from "./services/AuthProvider";
 import type React from "react"; // Added import for React
+import { IMAGE_URL } from "@/lib/urls";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,16 +23,16 @@ export default function RootLayout({
   return (
     <html lang="tr" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/images/midora_log.png" sizes="any" />
+        <link rel="icon" href={IMAGE_URL.logoUrl} sizes="any" />
         <link
           rel="icon"
-          href="/images/midora_logo.jpg"
+          href={IMAGE_URL.logoUrl}
           type="image/jpeg"
           sizes="any"
         />
         <link
           rel="apple-touch-icon"
-          href="/images/midora_logo.jpg"
+          href={IMAGE_URL.logoUrl}
           type="image/jpeg"
           sizes="any"
         />

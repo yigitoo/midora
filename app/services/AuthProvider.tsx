@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useToast } from "@/components/ui/use-toast"
+import { URL_MAP, API_URL } from '@/lib/urls'
 
 
 interface AuthContextType {
@@ -29,9 +30,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const { toast } = useToast()
 
-  const defaultAfterLoginPath = '/'
-  const defaultAfterSignupPath = '/'
-  const defaultAfterLogoutPath = '/login'
+  const defaultAfterLoginPath = URL_MAP.homePage
+  const defaultAfterSignupPath = URL_MAP.homePage
+  const defaultAfterLogoutPath = URL_MAP.loginPage
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -42,7 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchUserData = async (token: string) => {
     try {
-      const res = await fetch('/api/auth/user', {
+      const res = await fetch(API_URL.userAuthApiEndpoint , {
         headers: { Authorization: `Bearer ${token}` }
       })
       if (res.ok) {
@@ -58,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string, afterLoginPath: string = defaultAfterLoginPath) => {
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch(API_URL.loginApiEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -100,7 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signup = async (email: string, password: string, name: string, username: string, afterSignupPath: string = defaultAfterSignupPath) => {
     try {
-      const res = await fetch('/api/auth/signup', {
+      const res = await fetch(API_URL.signUpApiEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, name, username }),

@@ -3,6 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useAuth } from "./services/AuthProvider";
 import { Loader2 } from "lucide-react";
+
+import { URL_MAP } from '@/lib/urls'
+
 export default function Home() {
   const { isLoggedIn } = useAuth();
 
@@ -10,9 +13,9 @@ export default function Home() {
 
   setTimeout(() => {
     if (isLoggedIn) {
-      router.push("/forum");
+      router.push(URL_MAP.forumPage);
     } else {
-      router.push("/login");
+      router.push(URL_MAP.loginPage);
     }
   }, 1000);
 

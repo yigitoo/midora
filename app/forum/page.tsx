@@ -9,6 +9,7 @@ import { useAuth } from "@/app/services/AuthProvider"
 import { Search, Loader2, MessageCircle, Heart } from "lucide-react"
 import debounce from "lodash/debounce"
 import type { ForumEntry, ForumResponse } from "@/types/forum"
+import { URL_MAP } from "@/lib/urls"
 
 const ENTRIES_PER_PAGE = 20
 
@@ -50,7 +51,7 @@ export default function ForumPage() {
 
   const handleLike = async (entryId: string) => {
     if (!isLoggedIn) {
-      router.push('/login')
+      router.push(URL_MAP.loginPage)
       return
     }
 

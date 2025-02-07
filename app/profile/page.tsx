@@ -20,6 +20,7 @@ import { NextResponse } from "next/server";
 import clientPromise from "@/lib/database";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { API_URL, URL_MAP } from "@/lib/urls";
 
 export default function ProfilePage() {
   const { isLoggedIn, user } = useAuth();
@@ -64,7 +65,7 @@ export default function ProfilePage() {
         throw new Error("No authentication token found");
       }
 
-      const response = await fetch("/api/auth/user", {
+      const response = await fetch(API_URL.userAuthApiEndpoint, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -106,7 +107,7 @@ export default function ProfilePage() {
   };
 
   if (!isLoggedIn) {
-    router.push("/login");
+    router.push(URL_MAP.loginPage);
     return (
       <div
         className="text-center font-bold"

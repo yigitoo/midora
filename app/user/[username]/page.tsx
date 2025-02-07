@@ -13,6 +13,7 @@ import {
 } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/components/ui/use-toast"
+import { URL_MAP } from "@/lib/urls"
 
 interface UserProfile {
   name: string
@@ -246,7 +247,7 @@ export default function UserProfilePage() {
 
   if (error || !profile) {
     setTimeout(() => {
-      router.push("/")
+      router.push(URL_MAP.homePage)
     }, 1500)
     return <div className="text-center text-red-500 py-8">{error}</div>
   }

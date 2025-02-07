@@ -14,13 +14,14 @@ import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Mail, Github, Linkedin } from "lucide-react";
+import { IMAGE_URL, URL_MAP } from "@/lib/urls";
 
 const founders = [
   {
     name: "Çağan Dönmez",
-    image: "/images/cagan_donmez.jpg",
+    image: IMAGE_URL.caganUrl,
     education: "Nazilli Fen Lisesi'25",
-    foundersPage: "/about/cagan",
+    foundersPage: URL_MAP.founderCaganPage,
     github: "https://github.com/yigitoo",
     linkedin:
       "https://www.linkedin.com/in/%C3%A7a%C4%9Fan-d%C3%B6nmez-4b7830347/",
@@ -35,17 +36,15 @@ const founders = [
   },
   {
     name: "Yiğit GÜMÜŞ",
-    image: "/images/yigit_gumus.jpg",
+    image: IMAGE_URL.yigitUrl,
     education: "Nazilli Fen Lisesi'25",
-    foundersPage: "/about/yigit",
+    foundersPage: URL_MAP.founderYigitPage,
     github: "https://github.com/yigitoo",
     linkedin: "https://www.linkedin.com/in/-yigitgumus/",
     job: "Economist - Midora CTO",
     technicalSkills: [
-      "Programlama",
-      "Yatırım",
-      "Finans",
-      "Derin Öğrenme ve Doğal Dil İşleme Modelleri",
+      "Yatırım Departmanı",
+      "Finansal Yönetim ve Risk Analizi",
     ],
     experiences: [
       "Mevcut iş tecrübesi",
@@ -87,7 +86,7 @@ const FoundersSection: React.FC = () => {
             height={300}
             className="founder-image"
             onError={(e) => {
-              (e.target as HTMLImageElement).src = "/";
+              (e.target as HTMLImageElement).src = URL_MAP.homePage;
             }}
           />
           <p className="pt-5 text-white">{founder.name}</p>

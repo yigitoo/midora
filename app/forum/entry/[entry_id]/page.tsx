@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useAuth } from "@/app/services/AuthProvider"
 import { useToast } from "@/components/ui/use-toast"
 import { ArrowLeft, Heart, MessageCircle, Loader2 } from "lucide-react"
+import { URL_MAP } from "@/lib/urls"
 
 interface Comment {
   _id: string
@@ -171,7 +172,7 @@ export default function EntryPage() {
         title: "Hata",
         description: "Gönderi yüklenemedi"
       })
-      router.push('/forum')
+      router.push(URL_MAP.forumPage)
     } finally {
       setLoading(false)
     }

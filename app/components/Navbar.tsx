@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Search, X, Menu } from "lucide-react";
 import { useAuth } from "../services/AuthProvider";
 import { usePathname } from "next/navigation";
+import { IMAGE_URL, URL_MAP } from "@/lib/urls";
 
 export const Navbar = () => {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -19,7 +20,7 @@ export const Navbar = () => {
   const navbarHeight = "h-24"; // Define navbar height
   const mobileMenuHeight = "max-h-[400px]";
 
-  const siteLogoPath = "/images/midora_logo.jpg";
+  const siteLogoPath = IMAGE_URL.logoUrl
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -28,7 +29,7 @@ export const Navbar = () => {
   const AuthButtons = () =>
     isLoggedIn ? (
       <div className="flex items-center space-x-4">
-        <Link href="/profile">
+        <Link href={URL_MAP.profilePage}>
           <Button
             className="nav-link hover:opacity-80 transition-opacity px-3 py-2"
           >
@@ -47,14 +48,14 @@ export const Navbar = () => {
       </div>
     ) : (
       <div className="flex items-center space-x-4">
-        <Link href="/login">
+        <Link href={URL_MAP.loginPage}>
           <Button
             className="nav-link hover:opacity-80 transition-opacity px-3 py-2"
           >
             Giriş yap
           </Button>
         </Link>
-        <Link href="/signup">
+        <Link href={URL_MAP.signUpPage}>
           <Button variant="default" className="bg-blue-600 hover:bg-blue-700">
             Kayıt ol
           </Button>
@@ -66,7 +67,7 @@ export const Navbar = () => {
     isLoggedIn ? (
       <>
         <Link
-          href="/profile"
+          href={URL_MAP.profilePage}
           className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 transition-colors"
         >
           {user?.name || "Profil"}
@@ -81,13 +82,13 @@ export const Navbar = () => {
     ) : (
       <>
         <Link
-          href="/login"
+          href={URL_MAP.loginPage}
           className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 transition-colors"
         >
           Giriş yap
         </Link>
         <Link
-          href="/signup"
+          href={URL_MAP.signUpPage}
           className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 transition-colors"
         >
           Kayıt ol
@@ -110,7 +111,7 @@ export const Navbar = () => {
           <div className={`flex items-center justify-between ${navbarHeight}`}>
             {/* Logo */}
             <div className="flex items-center">
-              <Link href="/" className="flex-shrink-0">
+              <Link href={URL_MAP.homePage} className="flex-shrink-0">
                 <span className="flex items-center font-bold text-xl">
                   <Image className="mx-3" style={{
                     borderRadius: "50%",
@@ -124,19 +125,19 @@ export const Navbar = () => {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-6">
               <Link
-                href="/forum"
+                href={URL_MAP.forumPage}
                 className="nav-link hover:opacity-80 transition-opacity px-3 py-2"
               >
                 Forum
               </Link>
               <Link
-                href="/portfolios"
+                href={URL_MAP.portfoliosPage}
                 className="nav-link hover:opacity-80 transition-opacity px-3 py-2"
               >
                 Portföyler
               </Link>
               <Link
-                href="/about"
+                href={URL_MAP.aboutPage}
                 className="nav-link hover:opacity-80 transition-opacity px-3 py-2"
               >
                 Hakkımızda
@@ -201,19 +202,19 @@ export const Navbar = () => {
           >
             <div className="px-2 pt-2 pb-3 space-y-1">
               <Link
-                href="/forum"
+                href={URL_MAP.forumPage}
                 className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 transition-colors"
               >
                 Forum
               </Link>
               <Link
-                href="/portfolios"
+                href={URL_MAP.portfoliosPage}
                 className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 transition-colors"
               >
                 Portföyler
               </Link>
               <Link
-                href="/about"
+                href={URL_MAP.aboutPage}
                 className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 transition-colors"
               >
                 Hakkımızda
