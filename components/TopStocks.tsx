@@ -19,7 +19,7 @@ export function TopStocks({ stocks, onSelect }: TopStocksProps) {
         {stocks.map((stock) => (
           <motion.div
             key={stock.symbol}
-            className="bg-secondary p-4 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow duration-200"
+            className="shadow-blue-500/50 bg-secondary p-4 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow duration-200"
             whileHover={{ scale: 1.02 }}
             onClick={() => onSelect(stock.symbol)}
           >
