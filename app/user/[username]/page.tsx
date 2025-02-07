@@ -154,7 +154,7 @@ export default function UserProfilePage() {
     try {
       setIsSubmitting(true)
       const token = localStorage.getItem("token")
-      const response = await fetch(`/api/forum/entry/${postId}/comment`, {
+      const response = await fetch(`${API_URL.forumEntryApiEndpoint}/${postId}/comment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
