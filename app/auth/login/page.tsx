@@ -15,7 +15,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const router = useRouter()
-  const { login, isLoggedIn } = useAuth()
+  const { login, isLoggedIn, user } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -27,7 +27,7 @@ export default function LoginPage() {
   }
 
   setTimeout(() => {
-    if(isLoggedIn)
+    if(isLoggedIn && user)
     {
       router.push(URL_MAP.homePage)
     }
