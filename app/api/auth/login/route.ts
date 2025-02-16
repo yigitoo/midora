@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     const isSuspended = await db.collection('suspended_accounts').findOne({ email })
     if (isSuspended) {
       return NextResponse.json({
-        error: 'Account suspended',
+        error: 'Hesabınız askıya alınmıştır.',
         suspendedAt: isSuspended.createdAt,
         suspensionReason: isSuspended.reason,
         suspendedUntil: isSuspended.until

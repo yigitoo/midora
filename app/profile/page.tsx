@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, use } from "react";
-import { useAuth } from "../services/AuthProvider";
+import { useAuth } from "../../services/AuthProvider";
 import { useRouter } from "next/navigation";
 import {
   Card,

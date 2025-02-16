@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useAuth } from "./services/AuthProvider";
+import { useAuth } from "../services/AuthProvider";
 import { Loader2 } from "lucide-react";
 
 import { URL_MAP } from '@/lib/urls'

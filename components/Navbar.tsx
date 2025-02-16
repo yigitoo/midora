@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Search, X, Menu } from "lucide-react"
-import { useAuth } from "../app/services/AuthProvider"
+import { useAuth } from "../services/AuthProvider"
 import { usePathname } from "next/navigation"
 import { IMAGE_URL, URL_MAP } from "@/lib/urls"
 import { useSidebarStore } from "@/lib/store"
@@ -33,7 +33,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   }, [])
 
   const AuthButtons = () =>
-    isLoggedIn ? (
+    isLoggedIn && user ? (
       <div className="flex items-center space-x-4">
         <Link href={URL_MAP.profilePage}>
           <Button className="nav-link hover:opacity-80 transition-opacity px-3 py-2">

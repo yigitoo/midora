@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import useSidebar from "@/hooks/useSidebar";
 import { IMAGE_URL } from "@/lib/urls";
-import { AuthProvider } from "./services/AuthProvider";
+import { AuthProvider } from "../services/AuthProvider";
 import { ThemeProvider } from "../components/ThemeProvider";
 import { cn } from "@/lib/utils";
 
