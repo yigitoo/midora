@@ -2,7 +2,7 @@ import { MongoClient } from 'mongodb'
 import 'dotenv/config'
 
 
-const uri = "mongodb+srv://yigit:templekiller@hezartech-dataset.egejnem.mongodb.net/?retryWrites=true&w=majority&appName=HEZARTECH-DATASET"
+const uri = process.env.MONGODB_URI
 const options = {}
 
 let client
@@ -25,13 +25,16 @@ if (process.env.NODE_ENV === 'development') {
 
 async function initDB() {
 
-const client = await clientPromise.then()
+  const client = await clientPromise.then()
 
-client.db('midora').collection('users').createIndex({ email: 1 }, { unique: true })
-client.db('midora').collection('users').createIndex({ username: 1 }, { unique: true })
+  client.db('midora').collection('users').createIndex({ email: 1 }, { unique: true })
+  client.db('midora').collection('users').createIndex({ username: 1 }, { unique: true })
 
-client.db('midora').createCollection('suspended_accounts')
-client.db('midora').collection('suspended_accounts').createIndex({ "email": 1 }, { unique: true })
+  client.db('midora').createCollection('suspended_accounts')
+  client.db('midora').collection('suspended_accounts').createIndex({ "email": 1 }, { unique: true })
+
+  return client;
+
 }
 
 initDB();
