@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import clientPromise from '@/lib/database'
 import bcrypt from 'bcryptjs'
 import { ObjectId } from 'mongodb'
-import { IMAGE_URL, URL_MAP } from '@/lib/urls'
+import { IMAGE_URL } from '@/lib/urls'
 
 export async function POST(request: NextRequest) {
   try {
