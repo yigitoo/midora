@@ -22,7 +22,7 @@ const founders = [
     image: IMAGE_URL.caganUrl,
     education: "Nazilli Fen Lisesi'25",
     foundersPage: URL_MAP.founderCaganPage,
-    github: "https://github.com/yigitoo",
+    hasGithub: false,
     linkedin:
       "https://www.linkedin.com/in/%C3%A7a%C4%9Fan-d%C3%B6nmez-4b7830347/",
     job: "Engineer - Midora CEO",
@@ -39,6 +39,7 @@ const founders = [
     image: IMAGE_URL.yigitUrl,
     education: "Nazilli Fen Lisesi'25",
     foundersPage: URL_MAP.founderYigitPage,
+    hasGithub: true,
     github: "https://github.com/yigitoo",
     linkedin: "https://www.linkedin.com/in/-yigitgumus/",
     job: "Economist - Midora CTO",
@@ -104,8 +105,7 @@ export default function AboutPage() {
     transition: { duration: 0.6 },
   };
 
-  const midoraFacebook = "https://www.facebook.com/midoratr";
-  const midoraX = "https://www.x.com/midoratr";
+  const midoraX = "https://x.com/MidoraInvest";
   const midoraInstagram = "https://www.instagram.com/midoratr";
   const midoraYoutube = "https://www.youtube.com/midoratr";
 
@@ -211,6 +211,13 @@ export default function AboutPage() {
         <div className="grid md:grid-cols-2 gap-8">
           {founders.map((founder, index) => (
             <motion.div
+              style={{
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+                backdropFilter: "inherit",
+                borderRadius: "16px",
+                backgroundColor: "linear-gradient(180deg,rgb(0, 89, 255) 5%, rgba(0, 0, 0, 0) 100%)",
+                boxShadow: "10px 4px 30px rgba(0, 0, 0, 0.1)",
+              }}
               key={founder.name}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -272,6 +279,7 @@ export default function AboutPage() {
 
                       <div className="flex gap-4 pt-4">
                         <a
+                          style={founder.hasGithub ? {} : { display: "none" }}
                           href={founder.github}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -319,21 +327,6 @@ export default function AboutPage() {
               style={{ color: "#000", background: "#fff" }}
               className="h-4 w-4"
             />
-          </Button>
-          <Button onClick={() => window.open(midoraFacebook)} style={{background: '#fff'}} variant="outline" size="icon">
-            <svg
-              style={{
-                color: '#0066ff',
-                backgroundColor: '#fff',
-              }}
-              className="h-4 w-4"
-              role="img"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <title>Facebook</title>
-              <image href="/images/facebook.svg" color="#ff0000" width="24" height="24" />
-            </svg>
           </Button>
           <Button onClick={() => window.open(midoraX)} style={{
             backgroundColor: "#fff",

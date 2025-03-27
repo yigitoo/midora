@@ -2,8 +2,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Sidebar from "@/components/Sidebar";
+import Navbar from "@/components/navbar/Navbar";
+import Sidebar from "@/components/sidebar/Sidebar";
 import useSidebar from "@/hooks/useSidebar";
 import { IMAGE_URL } from "@/lib/urls";
 import { AuthProvider } from "../services/AuthProvider";

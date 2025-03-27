@@ -72,9 +72,9 @@ export default function LoginPage() {
             </Button>
             <p className="text-sm text-center text-muted-foreground">
               Hesabın yok mu?
-              <Link href={URL_MAP.signUpPage} className="text-primary hover:text-primary/90 underline ml-1">
-                Kayıt ol
-              </Link>
+              <Button type="submit" className="ml-2 hover:underline bg-[#193bc2] text-primary-foreground hover:bg-primary/90">
+                Kayıt ol!
+              </Button>
             </p>
           </CardFooter>
         </form>

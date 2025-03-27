@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from "framer-motion"
-import type { Stock } from "../lib/mockStockApi"
+import type { Stock } from "../../lib/mockStockApi"
 
 interface TopStocksProps {
   stocks: Stock[]

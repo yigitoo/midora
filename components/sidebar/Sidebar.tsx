@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { URL_MAP } from "@/lib/urls";
 import { motion } from "framer-motion";
-import { Separator } from "./ui/separator";
+import { Separator } from "../ui/separator";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -28,11 +28,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   return (
     <div
       className={cn(
-        "hidden md:flex fixed left-0 top-24 h-[calc(100vh-6rem)] bg-secondary transition-all duration-300 ease-in-out z-30",
+        "larg-screen-only 2xl:flex fixed left-0 top-24 h-[calc(100vh-6rem)] bg-secondary transition-all duration-300 ease-in-out z-30",
         isOpen ? (isCollapsed ? "w-20" : "w-50") : "w-0",
         "border-r shadow-md"
       )}
-      style={{}}
+      style={{
+        borderRight: "1px solid rgba(255, 255, 255, 0.1)",
+        backdropFilter: "blur(10px)",
+        boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+      }}
     >
       <nav className={cn(cn("p-4 space-y-2", isOpen ? "" : "hidden"))}>
         <Button
