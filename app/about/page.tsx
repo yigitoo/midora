@@ -2,17 +2,17 @@
 import React from "react";
 import Image from "next/image";
 import { Inter } from "next/font/google";
-import { ThemeToggle } from "../../components/ThemeToggle";
+import { ThemeToggle } from "@/app/components/ThemeToggle";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+} from "@/app/components/ui/card";
+import { Label } from "@/app/components/ui/label";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import { Mail, Github, Linkedin } from "lucide-react";
 import { IMAGE_URL, URL_MAP } from "@/lib/urls";
 

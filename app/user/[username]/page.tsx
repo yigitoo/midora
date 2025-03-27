@@ -3,16 +3,16 @@
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Image from "next/image"
-import { Card, CardContent } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/app/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs"
+import { Button } from "@/app/components/ui/button"
 import {
   Mail, Calendar, MapPin,
   Heart, MessageCircle, Send,
   Loader2, Github, Twitter, Linkedin
 } from "lucide-react"
-import { Textarea } from "@/components/ui/textarea"
-import { useToast } from "@/components/ui/use-toast"
+import { Textarea } from "@/app/components/ui/textarea"
+import { useToast } from "@/app/components/ui/use-toast"
 import { API_URL, URL_MAP } from "@/lib/urls"
 
 interface UserProfile {

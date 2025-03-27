@@ -2,12 +2,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@/styles/globals.css";
-import Navbar from "@/components/navbar/Navbar";
-import Sidebar from "@/components/sidebar/Sidebar";
+import Navbar from "@/app/components/navbar/Navbar";
+import Sidebar from "@/app/components/sidebar/Sidebar";
 import useSidebar from "@/hooks/useSidebar";
 import { IMAGE_URL } from "@/lib/urls";
-import { AuthProvider } from "../services/AuthProvider";
-import { ThemeProvider } from "../components/ThemeProvider";
+import { AuthProvider } from "@/services/AuthProvider";
+import { ThemeProvider } from "@/app/components/ThemeProvider";
 import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"] });

@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/app/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Search } from "lucide-react";
 
 interface Portfolio {
@@ -173,8 +173,8 @@ export default function PortfolioPage() {
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/app/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Search, Loader2 } from "lucide-react";
 
 interface Portfolio {

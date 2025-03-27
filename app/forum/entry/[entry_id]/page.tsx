@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/app/components/ui/button"
+import { Card, CardContent } from "@/app/components/ui/card"
+import { Textarea } from "@/app/components/ui/textarea"
 import { useAuth } from "@/services/AuthProvider"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/app/components/ui/use-toast"
 import { ArrowLeft, Heart, MessageCircle, Loader2 } from "lucide-react"
 import { API_URL, URL_MAP } from "@/lib/urls"
 

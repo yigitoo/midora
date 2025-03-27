@@ -4,7 +4,7 @@ import type React from "react";
 import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import {
   ChevronRight,
   Home,

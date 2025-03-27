@@ -9,13 +9,13 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { ThemeToggle } from "../../components/ThemeToggle";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+} from "@/app/components/ui/card";
+import { Label } from "@/app/components/ui/label";
+import { ThemeToggle } from "@/app/components/ThemeToggle";
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
 import { Edit2, Save, Loader2 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/app/components/ui/use-toast";
 import { NextResponse } from "next/server";
 import { API_URL, URL_MAP } from "@/lib/urls";
 
