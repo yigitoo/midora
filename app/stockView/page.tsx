@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { SearchBox } from "@/components/Stocks/SearchBox"
-import { StockResultsList } from "@/components/Stocks/StockResultsList"
-import { StockDetails } from "@/components/Stocks/StockDetails"
-import { TopStocks } from "@/components/Stocks/TopStocks"
-import { StockFilters, type StockFilters as FilterType } from "@/components/Stocks/StockFilters"
+import { SearchBox } from "@/components/stocks/SearchBox"
+import { StockResultsList } from "@/components/stocks/StockResultsList"
+import { StockDetails } from "@/components/stocks/StockDetails"
+import { TopStocks } from "@/components/stocks/TopStocks"
+import { StockFilters, type StockFilters as FilterType } from "@/components/stocks/StockFilters"
 import { searchStocks, getStockDetails, getTopStocks, filterStocks, type Stock } from "@/lib/mockStockApi"
 import { cn, removeElementsByClass } from "@/lib/utils"
 
