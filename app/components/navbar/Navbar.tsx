@@ -10,11 +10,19 @@ import { Search, X, Menu } from "lucide-react"
 import { useAuth } from "@/services/AuthProvider"
 import { usePathname } from "next/navigation"
 import { IMAGE_URL, URL_MAP } from "@/lib/urls"
-import { useSidebarStore } from "@/lib/store"
-import React from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/app/components/ui/dropdown-menu"
+import type React from "react"
 
 interface NavbarProps {
-  toggleSidebar: () => void;
+  toggleSidebar: () => void
 }
 
 const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
@@ -30,83 +38,11 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
 
   useEffect(() => {
     setIsMobileMenuOpen(false)
-  }, [])
-
-  const AuthButtons = () =>
-    isLoggedIn && user ? (
-      <div className="flex items-center space-x-4">
-        <Link href={URL_MAP.profilePage}>
-          <Button className="nav-link hover:opacity-80 transition-opacity px-3 py-2">
-            {user?.username || user?.name || "Profil"}
-          </Button>
-        </Link>
-        <Button
-          variant="ghost"
-          className="bg-red-500 block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-red-700 text-white transition-colors"
-          onClick={() => {
-            logout()
-          }}
-        >
-          Çıkış yap
-        </Button>
-      </div>
-    ) : (
-      <div className="flex items-center space-x-4">
-        <Link href={URL_MAP.loginPage}>
-          <Button className="nav-link hover:opacity-80 transition-opacity px-3 py-2">Giriş yap</Button>
-        </Link>
-        <Link href={URL_MAP.signUpPage}>
-          <Button variant="default" className="bg-blue-600 hover:bg-blue-700">
-            Kayıt ol
-          </Button>
-        </Link>
-      </div>
-    )
-
-  const MobileAuthButtons = () =>
-    isLoggedIn ? (
-      <>
-        <Link
-          href={URL_MAP.profilePage}
-          className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 transition-colors"
-        >
-          {user?.name || "Profil"}
-        </Link>
-        <button
-          className="bg-red-500 block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-red-700 text-white transition-colors"
-          onClick={() => logout()}
-        >
-          Çıkış yap
-        </button>
-      </>
-    ) : (
-      <>
-        <Link
-          href={URL_MAP.loginPage}
-          className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 transition-colors"
-        >
-          Giriş yap
-        </Link>
-        <Link
-          href={URL_MAP.signUpPage}
-          className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 transition-colors"
-        >
-          Kayıt ol
-        </Link>
-      </>
-    )
+  }, [pathname])
 
   return (
     <>
-      <nav
-        style={{
-          backgroundColor: "#1a202c",
-          color: "white",
-          borderBottom: "3px solid var(--color-primary-foreground)",
-          zIndex: 99999,
-        }}
-        className="navbar-bg-secondary text-secondary-foreground shadow-md fixed w-full top-0"
-      >
+      <nav className="fixed w-full top-0 z-50 glass-effect backdrop-blur-lg shadow-lg">
         <div className="max-w-7xl mx-auto px-4">
           <div className={`flex items-center justify-between ${navbarHeight}`}>
             {/* Logo */}
@@ -114,17 +50,13 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
               <Link href={URL_MAP.homePage} className="flex-shrink-0">
                 <span className="flex items-center font-bold text-xl">
                   <Image
-                    className="mx-3"
-                    style={{
-                      borderRadius: "50%",
-                      border: "2px solid var(--color-primary-foreground)",
-                    }}
+                    className="mx-3 rounded-full animate-pulse-glow"
                     width={70}
                     height={70}
                     src={siteLogoPath || "/placeholder.svg"}
                     alt="midora"
                   />
-                  Midora
+                  <span className="gradient-text text-2xl font-bold">Midora</span>
                 </span>
               </Link>
             </div>
@@ -135,10 +67,13 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
                 Forum
               </Link>
               <Link href={URL_MAP.portfoliosPage} className="nav-link hover:opacity-80 transition-opacity px-3 py-2">
-                Portföyler
+                Portfolios
+              </Link>
+              <Link href={URL_MAP.stockViewPage} className="nav-link hover:opacity-80 transition-opacity px-3 py-2">
+                Stocks
               </Link>
               <Link href={URL_MAP.aboutPage} className="nav-link hover:opacity-80 transition-opacity px-3 py-2">
-                Hakkımızda
+                About
               </Link>
 
               {/* Desktop Search */}
@@ -153,7 +88,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
                     type="search"
                     placeholder="Search..."
                     className={cn(
-                      "pr-8 transition-all duration-300 bg-gray-700 border-gray-600",
+                      "pr-8 transition-all duration-300 glass-effect",
                       !isSearchExpanded && "opacity-0 w-0 p-0",
                     )}
                     onFocus={() => setIsSearchExpanded(true)}
@@ -162,7 +97,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="absolute right-0 top-0 h-full px-3 text-gray-300"
+                    className="absolute right-0 top-0 h-full px-3 text-primary"
                     onClick={() => setIsSearchExpanded(!isSearchExpanded)}
                   >
                     {isSearchExpanded ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
@@ -171,10 +106,49 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
               </div>
 
               {/* Desktop Auth */}
-              <AuthButtons />
+              {isLoggedIn && user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                      <Avatar>
+                        <AvatarImage src={`${IMAGE_URL.randomAvatarGenerator}${user.username}`} alt={user.username} />
+                        <AvatarFallback>{user.username.charAt(0).toUpperCase()}</AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end">
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href={URL_MAP.profilePage}>Profile</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href={`${URL_MAP.userProfilePage}/${user.username}`}>Public Profile</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href={URL_MAP.portfoliosPage}>My Portfolio</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="text-red-500 focus:text-red-500" onClick={() => logout()}>
+                      Log out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <div className="flex items-center space-x-4">
+                  <Link href={URL_MAP.loginPage}>
+                    <Button variant="ghost" className="nav-link hover:opacity-80 transition-opacity px-3 py-2">
+                      Log in
+                    </Button>
+                  </Link>
+                  <Link href={URL_MAP.signUpPage}>
+                    <Button className="bg-gradient-vibrant hover:opacity-90 transition-opacity">Sign up</Button>
+                  </Link>
+                </div>
+              )}
 
               {/* Sidebar Toggle */}
-              <Button variant="ghost" size="icon" className="text-gray-300" onClick={toggleSidebar}>
+              <Button variant="ghost" size="icon" className="text-primary" onClick={toggleSidebar}>
                 <Menu className="h-6 w-6" />
               </Button>
             </div>
@@ -184,7 +158,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-gray-300"
+                className="text-primary"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
                 <Menu className="h-6 w-6" />
@@ -202,33 +176,75 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             <div className="px-2 pt-2 pb-3 space-y-1">
               <Link
                 href={URL_MAP.forumPage}
-                className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 transition-colors"
+                className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary/20 transition-colors"
               >
                 Forum
               </Link>
               <Link
                 href={URL_MAP.portfoliosPage}
-                className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 transition-colors"
+                className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary/20 transition-colors"
               >
-                Portföyler
+                Portfolios
+              </Link>
+              <Link
+                href={URL_MAP.stockViewPage}
+                className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary/20 transition-colors"
+              >
+                Stocks
               </Link>
               <Link
                 href={URL_MAP.aboutPage}
-                className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 transition-colors"
+                className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary/20 transition-colors"
               >
-                Hakkımızda
+                About
               </Link>
 
-              <hr style={{ marginTop: "10px", marginBottom: "10px" }} />
+              <div className="my-4 h-0.5 rounded-lg bg-gradient-vibrant" />
 
               {/* Mobile Auth */}
-              <MobileAuthButtons />
+              {isLoggedIn ? (
+                <>
+                  <Link
+                    href={URL_MAP.profilePage}
+                    className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary/20 transition-colors"
+                  >
+                    Profile
+                  </Link>
+                  <Link
+                    href={`${URL_MAP.userProfilePage}/${user?.username}`}
+                    className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary/20 transition-colors"
+                  >
+                    Public Profile
+                  </Link>
+                  <button
+                    className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-500 hover:bg-red-500/10 transition-colors"
+                    onClick={() => logout()}
+                  >
+                    Log out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href={URL_MAP.loginPage}
+                    className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary/20 transition-colors"
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    href={URL_MAP.signUpPage}
+                    className="block px-3 py-2 rounded-md text-base font-medium bg-gradient-vibrant text-white hover:opacity-90 transition-opacity"
+                  >
+                    Sign up
+                  </Link>
+                </>
+              )}
 
               {/* Mobile Search */}
               <div className="px-3 py-2">
                 <div className="relative">
-                  <Input type="search" placeholder="Search..." className="w-full bg-gray-700 border-gray-600" />
-                  <Button variant="ghost" size="icon" className="absolute right-0 top-0 h-full px-3 text-gray-300">
+                  <Input type="search" placeholder="Search..." className="w-full glass-effect" />
+                  <Button variant="ghost" size="icon" className="absolute right-0 top-0 h-full px-3 text-primary">
                     <Search className="h-4 w-4" />
                   </Button>
                 </div>

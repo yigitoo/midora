@@ -31,4 +31,3 @@ export interface ForumResponse {
   currentPage: number
   totalEntries: number
 }
-

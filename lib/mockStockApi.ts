@@ -491,4 +491,3 @@ export function filterStocks(filters: StockFilters): Stock[] {
     )
   })
 }
-

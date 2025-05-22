@@ -108,4 +108,3 @@ export function StockDetails({ stock }: StockDetailsProps) {
     </motion.div>
   )
 }
-

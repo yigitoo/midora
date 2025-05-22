@@ -72,9 +72,11 @@ export default function LoginPage() {
             </Button>
             <p className="text-sm text-center text-muted-foreground">
               Hesabın yok mu?
-              <Button type="submit" className="ml-2 hover:underline bg-[#193bc2] text-primary-foreground hover:bg-primary/90">
-                Kayıt ol!
-              </Button>
+              <Link href='/auth/signup'>
+                <Button type="submit" className="ml-2 hover:underline bg-[#193bc2] text-primary-foreground hover:bg-primary/90">
+                  Kayıt ol!
+                </Button>
+              </Link>
             </p>
           </CardFooter>
         </form>

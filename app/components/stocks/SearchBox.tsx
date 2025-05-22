@@ -32,10 +32,10 @@ export function SearchBox({ isSmall, onSearch, onFocus }: SearchBoxProps) {
       transition={{ duration: 0.3 }}
     >
       <motion.div
-        className={`shadow-blue-500/50 bg-secondary shadow-lg rounded-full ${
+        className={`glass-effect shadow-lg rounded-full ${
           isSmall ? "w-64" : "w-full"
         } flex items-center overflow-hidden transition-shadow duration-300 ${
-          isFocused ? "ring-2 ring-blue-400 shadow-xl" : ""
+          isFocused ? "ring-2 ring-primary shadow-xl" : ""
         }`}
         initial={false}
         animate={{
@@ -43,10 +43,10 @@ export function SearchBox({ isSmall, onSearch, onFocus }: SearchBoxProps) {
         }}
         transition={{ duration: 0.3 }}
       >
-        <Search className="ml-4" size={isSmall ? 20 : 24} />
+        <Search className="ml-4 text-primary" size={isSmall ? 20 : 24} />
         <input
           type="text"
-          placeholder="Search for a stock..."
+          placeholder="Search for a stock symbol or company name..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => {
@@ -54,10 +54,9 @@ export function SearchBox({ isSmall, onSearch, onFocus }: SearchBoxProps) {
             onFocus()
           }}
           onBlur={() => setIsFocused(false)}
-          className="bg-secondary  w-full h-full px-4 focus:outline-none text-lg"
+          className="bg-transparent w-full h-full px-4 focus:outline-none text-lg"
         />
       </motion.div>
     </motion.div>
   )
 }
-

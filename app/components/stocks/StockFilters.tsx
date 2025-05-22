@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { useState } from "react"
 import { motion } from "framer-motion"
@@ -28,6 +28,12 @@ const industries = [
   "Utilities",
   "Real Estate",
   "Communication Services",
+  "Defense",
+  "Transportation",
+  "Retail",
+  "Manufacturing",
+  "Steel",
+  "Holding",
 ]
 
 const marketCapOptions = [
@@ -55,17 +61,17 @@ export function StockFilters({ onFilterChange }: StockFiltersProps) {
 
   return (
     <motion.div
-      className="sm:mx-2 md:w-[65vw] border shadow-blue-500/50 bg-secondary p-4 rounded-lg shadow-lg mb-6"
+      className="sm:mx-2 md:w-[65vw] glass-effect p-6 rounded-lg shadow-lg mb-8"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h2 className="text-xl font-bold mb-4">Filtreler</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <h2 className="text-xl font-bold mb-4 gradient-text">Filter Stocks</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div>
-          <label className="block text-sm font-medium text-primary mb-1">Endüstri</label>
+          <label className="block text-sm font-medium mb-2">Industry</label>
           <Select onValueChange={(value) => handleFilterChange("industry", value)} defaultValue={filters.industry}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full glass-effect">
               <SelectValue placeholder="Select industry" />
             </SelectTrigger>
             <SelectContent>
@@ -78,9 +84,9 @@ export function StockFilters({ onFilterChange }: StockFiltersProps) {
           </Select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-primary mb-1">Market Cap</label>
+          <label className="block text-sm font-medium mb-2">Market Cap</label>
           <Select onValueChange={(value) => handleFilterChange("marketCap", value)} defaultValue={filters.marketCap}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full glass-effect">
               <SelectValue placeholder="Select market cap" />
             </SelectTrigger>
             <SelectContent>
@@ -93,31 +99,31 @@ export function StockFilters({ onFilterChange }: StockFiltersProps) {
           </Select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-primary mb-1">Volume (Million)</label>
+          <label className="block text-sm font-medium mb-2">Volume (Million)</label>
           <Slider
             min={0}
             max={100}
             step={1}
             value={filters.volume}
-            onValueChange={(value) => handleFilterChange("volume", value)}
-            className="mt-2"
+            onValueChange={(value) => handleFilterChange("volume", value as [number, number])}
+            className="mt-4"
           />
-          <div className="flex justify-between mt-1 text-xs text-gray-600">
+          <div className="flex justify-between mt-2 text-xs text-muted-foreground">
             <span>{filters.volume[0]}M</span>
             <span>{filters.volume[1]}M</span>
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-primary mb-1">Price Range ($)</label>
+          <label className="block text-sm font-medium mb-2">Price Range ($)</label>
           <Slider
             min={0}
             max={1000}
             step={10}
             value={filters.priceRange}
-            onValueChange={(value) => handleFilterChange("priceRange", value)}
-            className="mt-2"
+            onValueChange={(value) => handleFilterChange("priceRange", value as [number, number])}
+            className="mt-4"
           />
-          <div className="flex justify-between mt-1 text-xs text-gray-600">
+          <div className="flex justify-between mt-2 text-xs text-muted-foreground">
             <span>${filters.priceRange[0]}</span>
             <span>${filters.priceRange[1]}</span>
           </div>
@@ -126,4 +132,3 @@ export function StockFilters({ onFilterChange }: StockFiltersProps) {
     </motion.div>
   )
 }
-
