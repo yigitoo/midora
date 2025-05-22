@@ -28,7 +28,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   return (
     <div
       className={cn(
-        "larg-screen-only 2xl:flex fixed left-0 top-24 h-[calc(100vh-6rem)] bg-secondary transition-all duration-300 ease-in-out z-30",
+        "large-screen-only 2xl:flex fixed left-0 top-24 h-[calc(100vh-6rem)] bg-secondary transition-all duration-300 ease-in-out z-30",
         isOpen ? (isCollapsed ? "w-20" : "w-50") : "w-0",
         "border-r shadow-md"
       )}
