@@ -104,9 +104,9 @@ export default function AboutPage() {
     animate: { opacity: 1, y: 0 },
     transition: { duration: 0.6 },
   };
-
-  const midoraX = "https://x.com/MidoraInvest";
-  const midoraInstagram = "https://www.instagram.com/midoratr";
+  const midoraContactMail = "mailto:contact@midora.com.tr";
+  const midoraX = "https://x.com/MidoraTech";
+  const midoraInstagram = "https://www.instagram.com/midoratech";
   const midoraYoutube = "https://www.youtube.com/midoratr";
 
 
@@ -322,7 +322,7 @@ export default function AboutPage() {
           <h2 className="text-3xl font-bold mb-8">İletişime Geçin</h2>
         </header>
         <div className="flex justify-center space-x-4">
-          <Button style={{background: '#fff'}} variant="outline" size="icon">
+          <Button onClick={() => window.open(midoraContactMail)} style={{background: '#fff'}} variant="outline" size="icon">
             <Mail
               style={{ color: "#000", background: "#fff" }}
               className="h-4 w-4"
