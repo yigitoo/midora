@@ -3,8 +3,8 @@
 import { motion } from "framer-motion"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import { type Stock, generateFakeStockData } from "@/lib/mockStockApi"
-import { Button } from "@/app/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs"
+import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface StockDetailsProps {
   stock: Stock,

@@ -4,11 +4,11 @@ import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { Button } from "@/app/components/ui/button"
+import { Button } from "@/components/ui/button"
 import { ChevronRight, Home, Users, FileText, Info, Settings, DollarSign } from "lucide-react"
 import { URL_MAP } from "@/lib/urls"
 import { motion } from "framer-motion"
-import { Separator } from "../ui/separator"
+import { Separator } from "@/components/ui/separator"
 
 interface SidebarProps {
   isOpen: boolean

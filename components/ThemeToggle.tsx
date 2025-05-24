@@ -1,8 +1,8 @@
 "use client"
 
-import { useTheme } from "./ThemeProvider"
-import { Label } from "@/app/components/ui/label"
-import { Switch } from "@/app/components/ui/switch"
+import { useTheme } from "@/components/ThemeProvider"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import { Moon, Sun } from "lucide-react"
 
 export function ThemeToggle() {

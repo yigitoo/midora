@@ -4,13 +4,13 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
-import { Input } from "@/app/components/ui/input"
-import { Button } from "@/app/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 import { Search, X, Menu } from "lucide-react"
 import { useAuth } from "@/services/AuthProvider"
 import { usePathname } from "next/navigation"
 import { IMAGE_URL, URL_MAP } from "@/lib/urls"
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +18,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu"
 import type React from "react"
 
 interface NavbarProps {
