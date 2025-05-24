@@ -1,121 +1,96 @@
 "use client"
 
+import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
-import {
-  Home,
-  TrendingUp,
-  BarChart3,
-  Users,
-  Info,
-  ChevronLeft,
-  ChevronRight,
-  Search,
-  Newspaper,
-  PieChart,
-} from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Button } from "@/app/components/ui/button"
+import { ChevronRight, Home, Users, FileText, Info, Settings, DollarSign } from "lucide-react"
+import { URL_MAP } from "@/lib/urls"
+import { motion } from "framer-motion"
+import { Separator } from "../ui/separator"
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen: boolean
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const pathname = usePathname()
-
-  const navigation = [
-    {
-      title: "Main",
-      items: [
-        { name: "Home", href: "/", icon: Home },
-        { name: "Search Stocks", href: "/stocks/search", icon: Search },
-        { name: "All Stocks", href: "/stocks", icon: BarChart3 },
-      ],
-    },
-    {
-      title: "Market",
-      items: [
-        { name: "Top Gainers", href: "/stocks?filter=gainers", icon: TrendingUp },
-        { name: "Market News", href: "/news", icon: Newspaper },
-        { name: "Portfolios", href: "/portfolios", icon: PieChart },
-      ],
-    },
-    {
-      title: "Community",
-      items: [
-        { name: "Forum", href: "/forum", icon: Users },
-        { name: "About", href: "/about", icon: Info },
-      ],
-    },
-  ]
 
   return (
     <div
       className={cn(
-        "relative flex flex-col border-r bg-background transition-all duration-300",
-        isCollapsed ? "w-16" : "w-64",
+        "large-screen-only 2xl:flex fixed left-0 top-24 h-[calc(100vh-6rem)] transition-all duration-300 ease-in-out z-30",
+        isOpen ? (isCollapsed ? "w-20" : "w-64") : "w-0",
+        "glass-effect",
       )}
     >
-      {/* Toggle Button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        className="absolute -right-3 top-6 z-10 h-6 w-6 rounded-full border bg-background p-0"
-        onClick={() => setIsCollapsed(!isCollapsed)}
-      >
-        {isCollapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
-      </Button>
+      <nav className={cn("p-4 space-y-2 w-full", isOpen ? "" : "hidden")}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="mx-0 hover:bg-primary hover:text-primary-foreground rounded-md justify-start w-full px-4"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+        >
+          <ChevronRight className={cn("h-6 w-6 transition-transform", isCollapsed ? "" : "rotate-180")} />
+          {!isCollapsed && (
+            <motion.span
+              className="p-2"
+              initial={{ opacity: 0, x: -5 }}
+              animate={{ opacity: 1, x: 0, transition: { duration: 0.3 } }}
+              exit={{ opacity: 0, x: -5, transition: { duration: 0.3 } }}
+            >
+              Menu
+            </motion.span>
+          )}
+        </Button>
 
-      {/* Sidebar Content */}
-      <ScrollArea className="flex-1 px-3 py-6">
-        <div className="space-y-6">
-          {navigation.map((section) => (
-            <div key={section.title}>
-              {!isCollapsed && (
-                <h3 className="mb-2 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  {section.title}
-                </h3>
-              )}
-              <div className="space-y-1">
-                {section.items.map((item) => {
-                  const Icon = item.icon
-                  const isActive = pathname === item.href
+        <Separator className="my-4 h-0.5 rounded-lg bg-gradient-vibrant" />
 
-                  return (
-                    <Link key={item.name} href={item.href}>
-                      <Button
-                        variant={isActive ? "secondary" : "ghost"}
-                        className={cn(
-                          "w-full justify-start",
-                          isCollapsed ? "px-2" : "px-3",
-                          isActive && "bg-primary/10 text-primary",
-                        )}
-                        size="sm"
-                      >
-                        <Icon className={cn("h-4 w-4", isCollapsed ? "mr-0" : "mr-2")} />
-                        {!isCollapsed && <span>{item.name}</span>}
-                      </Button>
-                    </Link>
-                  )
-                })}
-              </div>
-              {!isCollapsed && <Separator className="my-4" />}
-            </div>
-          ))}
-        </div>
-      </ScrollArea>
-
-      {/* Footer */}
-      {!isCollapsed && (
-        <div className="border-t p-4">
-          <p className="text-xs text-muted-foreground text-center">
-            © 2024 Midora
-            <br />
-            Stock Market Platform
-          </p>
-        </div>
-      )}
+        <SidebarItem href={URL_MAP.homePage} icon={Home} text="Home" isCollapsed={isCollapsed} />
+        <SidebarItem href={URL_MAP.forumPage} icon={FileText} text="Forum" isCollapsed={isCollapsed} />
+        <SidebarItem href={URL_MAP.portfoliosPage} icon={Users} text="Portfolios" isCollapsed={isCollapsed} />
+        <SidebarItem href={URL_MAP.stockViewPage} icon={DollarSign} text="Stocks" isCollapsed={isCollapsed} />
+        <SidebarItem href={URL_MAP.aboutPage} icon={Info} text="About" isCollapsed={isCollapsed} />
+        <SidebarItem href={URL_MAP.profilePage} icon={Settings} text="Profile" isCollapsed={isCollapsed} />
+      </nav>
     </div>
   )
 }
+
+interface SidebarItemProps {
+  href: string
+  icon: React.ElementType
+  text: string
+  isCollapsed: boolean
+}
+
+const SidebarItem: React.FC<SidebarItemProps> = ({ href, icon: Icon, text, isCollapsed }) => {
+  return (
+    <Link href={href}>
+      <motion.div className="overflow-hidden relative mt-2" style={{ width: "100%" }} whileHover={{ scale: 1.05 }}>
+        <Button
+          variant="ghost"
+          className={cn("w-full justify-start hover:bg-primary hover:text-primary-foreground", "px-4 group")}
+        >
+          <div className="relative">
+            <Icon className="h-5 w-5 group-hover:animate-pulse" />
+            <div className="absolute inset-0 bg-primary/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
+          {!isCollapsed && (
+            <motion.span
+              className="p-2"
+              initial={{ opacity: 0, x: -5 }}
+              animate={{ opacity: 1, x: 0, transition: { duration: 0.3 } }}
+              exit={{ opacity: 0, x: -5, transition: { duration: 0.3 } }}
+            >
+              {text}
+            </motion.span>
+          )}
+        </Button>
+      </motion.div>
+    </Link>
+  )
+}
+
+export default Sidebar

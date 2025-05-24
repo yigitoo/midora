@@ -1,120 +1,262 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ThemeToggle } from "@/components/ThemeToggle"
-import { Search, Menu, X, TrendingUp } from "lucide-react"
+import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { Input } from "@/app/components/ui/input"
+import { Button } from "@/app/components/ui/button"
+import { Search, X, Menu } from "lucide-react"
+import { useAuth } from "@/services/AuthProvider"
+import { usePathname } from "next/navigation"
+import { IMAGE_URL, URL_MAP } from "@/lib/urls"
+import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/app/components/ui/dropdown-menu"
+import type React from "react"
 
-export function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState("")
+interface NavbarProps {
+  toggleSidebar: () => void
+}
+
+const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { isLoggedIn, logout, user } = useAuth()
   const pathname = usePathname()
 
-  const navigation = [
-    { name: "Home", href: "/" },
-    { name: "Stocks", href: "/stocks" },
-    { name: "Portfolios", href: "/portfolios" },
-    { name: "Forum", href: "/forum" },
-    { name: "About", href: "/about" },
-  ]
+  const navbarHeight = "h-24"
+  const mobileMenuHeight = "max-h-[400px]"
 
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      window.location.href = `/stocks/search?q=${encodeURIComponent(searchQuery)}`
-    }
-  }
+  const siteLogoPath = IMAGE_URL.logoUrl
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false)
+  }, [pathname])
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <TrendingUp className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Midora
-            </span>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
-                  pathname === item.href ? "text-primary" : "text-muted-foreground",
-                )}
-              >
-                {item.name}
+    <>
+      <nav className="fixed w-full top-0 z-50 glass-effect backdrop-blur-lg shadow-lg">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className={`flex items-center justify-between ${navbarHeight}`}>
+            {/* Logo */}
+            <div className="flex items-center">
+              <Link href={URL_MAP.homePage} className="flex-shrink-0">
+                <span className="flex items-center font-bold text-xl">
+                  <Image
+                    className="mx-3 rounded-full animate-pulse-glow"
+                    width={70}
+                    height={70}
+                    src={siteLogoPath || "/placeholder.svg"}
+                    alt="midora"
+                  />
+                  <span className="gradient-text text-2xl font-bold">Midora</span>
+                </span>
               </Link>
-            ))}
-          </div>
+            </div>
 
-          {/* Search Bar */}
-          <div className="hidden lg:flex items-center space-x-2 flex-1 max-w-sm mx-8">
-            <Input
-              placeholder="Search stocks..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-              className="w-full"
-            />
-            <Button size="sm" onClick={handleSearch}>
-              <Search className="h-4 w-4" />
-            </Button>
-          </div>
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-6">
+              <Link href={URL_MAP.forumPage} className="nav-link hover:opacity-80 transition-opacity px-3 py-2">
+                Forum
+              </Link>
+              <Link href={URL_MAP.portfoliosPage} className="nav-link hover:opacity-80 transition-opacity px-3 py-2">
+                Portfolios
+              </Link>
+              <Link href={URL_MAP.stockViewPage} className="nav-link hover:opacity-80 transition-opacity px-3 py-2">
+                Stocks
+              </Link>
+              <Link href={URL_MAP.aboutPage} className="nav-link hover:opacity-80 transition-opacity px-3 py-2">
+                About
+              </Link>
 
-          {/* Theme Toggle & Mobile Menu */}
-          <div className="flex items-center space-x-2">
-            <ThemeToggle />
-            <Button variant="ghost" size="sm" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden border-t py-4">
-            <div className="flex flex-col space-y-4">
-              {/* Mobile Search */}
-              <div className="flex items-center space-x-2">
-                <Input
-                  placeholder="Search stocks..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-                  className="flex-1"
-                />
-                <Button size="sm" onClick={handleSearch}>
-                  <Search className="h-4 w-4" />
-                </Button>
+              {/* Desktop Search */}
+              <div className="relative flex items-center ml-4">
+                <div
+                  className={cn(
+                    "flex items-center transition-all duration-300 ease-in-out",
+                    isSearchExpanded ? "w-[275px]" : "w-10",
+                  )}
+                >
+                  <Input
+                    type="search"
+                    placeholder="Search..."
+                    className={cn(
+                      "pr-8 transition-all duration-300 glass-effect",
+                      !isSearchExpanded && "opacity-0 w-0 p-0",
+                    )}
+                    onFocus={() => setIsSearchExpanded(true)}
+                    onBlur={() => setIsSearchExpanded(false)}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-full px-3 text-primary"
+                    onClick={() => setIsSearchExpanded(!isSearchExpanded)}
+                  >
+                    {isSearchExpanded ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
+                  </Button>
+                </div>
               </div>
 
-              {/* Mobile Navigation */}
-              {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={cn(
-                    "text-sm font-medium transition-colors hover:text-primary py-2",
-                    pathname === item.href ? "text-primary" : "text-muted-foreground",
-                  )}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item.name}
-                </Link>
-              ))}
+              {/* Desktop Auth */}
+              {isLoggedIn && user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                      <Avatar>
+                        <AvatarImage src={`${IMAGE_URL.randomAvatarGenerator}${user.username}`} alt={user.username} />
+                        <AvatarFallback>{user.username.charAt(0).toUpperCase()}</AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end">
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href={URL_MAP.profilePage}>Profile</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href={`${URL_MAP.userProfilePage}/${user.username}`}>Public Profile</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href={URL_MAP.portfoliosPage}>My Portfolio</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="text-red-500 focus:text-red-500" onClick={() => logout()}>
+                      Log out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <div className="flex items-center space-x-4">
+                  <Link href={URL_MAP.loginPage}>
+                    <Button variant="ghost" className="nav-link hover:opacity-80 transition-opacity px-3 py-2">
+                      Log in
+                    </Button>
+                  </Link>
+                  <Link href={URL_MAP.signUpPage}>
+                    <Button className="bg-gradient-vibrant hover:opacity-90 transition-opacity">Sign up</Button>
+                  </Link>
+                </div>
+              )}
+
+              {/* Sidebar Toggle */}
+              <Button variant="ghost" size="icon" className="text-primary" onClick={toggleSidebar}>
+                <Menu className="h-6 w-6" />
+              </Button>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden flex items-center">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-primary"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                <Menu className="h-6 w-6" />
+              </Button>
             </div>
           </div>
-        )}
-      </div>
-    </nav>
+
+          {/* Mobile Menu */}
+          <div
+            className={cn(
+              "md:hidden transition-all duration-300 ease-in-out overflow-hidden",
+              isMobileMenuOpen ? mobileMenuHeight : "max-h-0",
+            )}
+          >
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              <Link
+                href={URL_MAP.forumPage}
+                className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary/20 transition-colors"
+              >
+                Forum
+              </Link>
+              <Link
+                href={URL_MAP.portfoliosPage}
+                className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary/20 transition-colors"
+              >
+                Portfolios
+              </Link>
+              <Link
+                href={URL_MAP.stockViewPage}
+                className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary/20 transition-colors"
+              >
+                Stocks
+              </Link>
+              <Link
+                href={URL_MAP.aboutPage}
+                className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary/20 transition-colors"
+              >
+                About
+              </Link>
+
+              <div className="my-4 h-0.5 rounded-lg bg-gradient-vibrant" />
+
+              {/* Mobile Auth */}
+              {isLoggedIn ? (
+                <>
+                  <Link
+                    href={URL_MAP.profilePage}
+                    className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary/20 transition-colors"
+                  >
+                    Profile
+                  </Link>
+                  <Link
+                    href={`${URL_MAP.userProfilePage}/${user?.username}`}
+                    className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary/20 transition-colors"
+                  >
+                    Public Profile
+                  </Link>
+                  <button
+                    className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-500 hover:bg-red-500/10 transition-colors"
+                    onClick={() => logout()}
+                  >
+                    Log out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href={URL_MAP.loginPage}
+                    className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary/20 transition-colors"
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    href={URL_MAP.signUpPage}
+                    className="block px-3 py-2 rounded-md text-base font-medium bg-gradient-vibrant text-white hover:opacity-90 transition-opacity"
+                  >
+                    Sign up
+                  </Link>
+                </>
+              )}
+
+              {/* Mobile Search */}
+              <div className="px-3 py-2">
+                <div className="relative">
+                  <Input type="search" placeholder="Search..." className="w-full glass-effect" />
+                  <Button variant="ghost" size="icon" className="absolute right-0 top-0 h-full px-3 text-primary">
+                    <Search className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+      {/* Spacer div to prevent content from going under navbar */}
+      <div className={navbarHeight}></div>
+    </>
   )
 }
+
+export default Navbar
