@@ -31,7 +31,6 @@ export default function ProfilePage() {
     email: "",
     username: "",
     bio: "",
-    location: "",
     joinDate: "",
     lastUpdateDate: "",
   });
@@ -59,7 +58,6 @@ export default function ProfilePage() {
         email: user.email || "",
         username: user.username || "",
         bio: user.bio || "",
-        location: user.location || "",
         joinDate: new Date(user.createdAt).toLocaleDateString() || "",
         lastUpdateDate: new Date(user.updatedAt).toLocaleDateString() || "",
       });
@@ -88,7 +86,6 @@ export default function ProfilePage() {
         body: JSON.stringify({
           name: userData.name,
           bio: userData.bio,
-          location: userData.location,
         }),
       });
 
@@ -182,16 +179,6 @@ export default function ProfilePage() {
                   value={userData.bio}
                   onChange={(e) =>
                     setUserData({ ...userData, bio: e.target.value })
-                  }
-                  disabled={!isEditing}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Konum</Label>
-                <Input
-                  value={userData.location}
-                  onChange={(e) =>
-                    setUserData({ ...userData, location: e.target.value })
                   }
                   disabled={!isEditing}
                 />
