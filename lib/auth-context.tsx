@@ -7,6 +7,7 @@ import type { User, Session } from "@supabase/supabase-js"
 
 interface AuthContextType {
   user: User | null
+  isLoggedIn: boolean | null
   session: Session | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<{ error: any }>
@@ -21,7 +22,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
-
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
   useEffect(() => {
@@ -33,6 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setSession(session)
       setUser(session?.user ?? null)
+      setIsLoggedIn(session?.user !== null)
       setLoading(false)
     }
 
@@ -44,6 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session)
       setUser(session?.user ?? null)
+      setIsLoggedIn(session?.user !== null)
       setLoading(false)
     })
 
@@ -55,6 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password,
     })
+
     return { error }
   }
 
@@ -82,6 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const value = {
     user,
+    isLoggedIn,
     session,
     loading,
     signIn,

@@ -21,8 +21,23 @@ import { useAuth } from '@/lib/auth-context'
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { isLoggedIn } = useAuth();
-  if (!isLoggedIn) {
+  const { isLoggedIn, user } = useAuth();
+  const { toast } = useToast();
+  
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [userData, setUserData] = useState({
+    name: "",
+    email: "",
+    username: "",
+    bio: "",
+    location: "",
+    joinDate: "",
+    lastUpdateDate: "",
+  });
+
+
+    if (!isLoggedIn) {
     router.push(URL_MAP.loginPage);
     return (
       <div
@@ -36,20 +51,6 @@ export default function ProfilePage() {
       </div>
     );
   }
-  const { user } = useAuth();
-
-  const { toast } = useToast();
-  const [isEditing, setIsEditing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [userData, setUserData] = useState({
-    name: "",
-    email: "",
-    username: "",
-    bio: "",
-    location: "",
-    joinDate: "",
-    lastUpdateDate: "",
-  });
 
   useEffect(() => {
     if (user) {

@@ -8,6 +8,7 @@ type Theme = "light" | "dark"
 
 type ThemeContextType = {
   theme: Theme
+  set_theme: (string) => void
   toggleTheme: () => void
 }
 
@@ -31,7 +32,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     document.documentElement.classList.toggle("dark", newTheme === "dark")
   }
 
-  return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>
+  const set_theme = (theme: string) => {
+    setTheme(theme);
+    localStorage.setItem("theme", theme);
+    document.documentElement.classList.toggle("dark", theme === "dark")
+  }
+
+  return <ThemeContext.Provider value={{ theme, set_theme, toggleTheme }}>{children}</ThemeContext.Provider>
 }
 
 export const useTheme = () => {
