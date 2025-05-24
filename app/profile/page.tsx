@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, use } from "react";
-import { useAuth } from "../../services/AuthProvider";
 import { useRouter } from "next/navigation";
 import {
   Card,
@@ -18,6 +17,7 @@ import { Edit2, Save, Loader2 } from "lucide-react";
 import { useToast } from "@/app/components/ui/use-toast";
 import { NextResponse } from "next/server";
 import { API_URL, URL_MAP } from "@/lib/urls";
+import { useAuth } from '@/lib/auth-context'
 
 export default function ProfilePage() {
   const router = useRouter();

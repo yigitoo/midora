@@ -1,185 +1,218 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/app/components/ui/button"
-import { Input } from "@/app/components/ui/input"
-import { Card, CardContent } from "@/app/components/ui/card"
-import { useAuth } from "@/services/AuthProvider"
-import { Search, Loader2, MessageCircle, Heart } from "lucide-react"
-import debounce from "lodash/debounce"
-import type { ForumEntry, ForumResponse } from "@/types/forum"
-import { API_URL, URL_MAP } from "@/lib/urls"
+import { useState } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { MessageSquare, TrendingUp, Users, Plus, Search, Heart, Reply } from "lucide-react"
 
-const ENTRIES_PER_PAGE = 20
+const forumPosts = [
+  {
+    id: 1,
+    title: "AAPL Q4 Earnings Analysis - What to Expect",
+    content:
+      "Apple's upcoming earnings report could be a game changer. Looking at the technical indicators and market sentiment...",
+    author: "TechAnalyst",
+    avatar: "/placeholder.svg?height=40&width=40",
+    category: "Earnings",
+    replies: 23,
+    likes: 45,
+    time: "2 hours ago",
+    tags: ["AAPL", "Earnings", "Tech"],
+  },
+  {
+    id: 2,
+    title: "BIST 100 Technical Breakout Pattern",
+    content:
+      "I'm seeing a potential ascending triangle formation on BIST 100. The resistance at 9,500 has been tested multiple times...",
+    author: "IstanbulTrader",
+    avatar: "/placeholder.svg?height=40&width=40",
+    category: "Technical Analysis",
+    replies: 18,
+    likes: 32,
+    time: "4 hours ago",
+    tags: ["BIST", "Technical", "Breakout"],
+  },
+  {
+    id: 3,
+    title: "Fed Rate Decision Impact on NASDAQ",
+    content:
+      "With the upcoming Fed meeting, how do you think the rate decision will affect tech stocks? Historical data shows...",
+    author: "MacroInvestor",
+    avatar: "/placeholder.svg?height=40&width=40",
+    category: "Market News",
+    replies: 67,
+    likes: 89,
+    time: "6 hours ago",
+    tags: ["Fed", "NASDAQ", "Rates"],
+  },
+]
+
+const categories = [
+  { name: "All", count: 234, icon: MessageSquare },
+  { name: "Market News", count: 89, icon: TrendingUp },
+  { name: "Technical Analysis", count: 67, icon: TrendingUp },
+  { name: "Earnings", count: 45, icon: TrendingUp },
+  { name: "General Discussion", count: 33, icon: Users },
+]
 
 export default function ForumPage() {
-  const [entries, setEntries] = useState<ForumEntry[]>([])
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
-  const { isLoggedIn, user } = useAuth()
-  const router = useRouter()
-
-  const fetchEntries = async (page: number, search: string = "") => {
-    try {
-      setLoading(true)
-      const response = await fetch(
-        `${API_URL.forumApiEndpoint}?page=${page}&limit=${ENTRIES_PER_PAGE}&search=${encodeURIComponent(search)}`
-      )
-      if (!response.ok) throw new Error()
-      const data: ForumResponse = await response.json()
-      setEntries(data.posts)
-      setTotalPages(data.totalPages)
-    } catch (error) {
-      console.error("Failed to fetch entries:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const debouncedSearch = debounce((value: string) => {
-    setCurrentPage(1)
-    fetchEntries(1, value)
-  }, 300)
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value)
-    debouncedSearch(e.target.value)
-  }
-
-  const handleLike = async (entryId: string) => {
-    if (!isLoggedIn) {
-      router.push(URL_MAP.loginPage)
-      return
-    }
-
-    try {
-      const token = localStorage.getItem('token')
-      const response = await fetch(`${API_URL.forumEntryApiEndpoint}/${entryId}/like`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-
-      if (response.status === 400) {
-        // Already liked
-        return
-      }
-
-      if (!response.ok) throw new Error()
-
-      const data = await response.json()
-
-      setEntries(prev =>
-        prev.map(entry =>
-          entry._id === entryId
-            ? {
-                ...entry,
-                likes: data.likes,
-                likedBy: [...(entry.likedBy || []), user?.username]
-              }
-            : entry
-        )
-      )
-    } catch (error) {
-      console.error("Failed to like entry:", error)
-    }
-  }
-
-  const isLikedByUser = (entry: ForumEntry) =>
-    isLoggedIn && entry.likedBy?.includes(user?.username || '')
-
-  useEffect(() => {
-    fetchEntries(currentPage, searchTerm)
-  }, [currentPage])
+  const [selectedCategory, setSelectedCategory] = useState("All")
+  const [searchQuery, setSearchQuery] = useState("")
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Forum</h1>
-        <div className="relative w-72">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Ara..."
-            value={searchTerm}
-            onChange={handleSearch}
-            className="pl-10"
-          />
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+          <div>
+            <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Midora Forum
+            </h1>
+            <p className="text-muted-foreground">Connect with fellow investors and share market insights</p>
+          </div>
+          <Button className="mt-4 md:mt-0 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+            <Plus className="h-4 w-4 mr-2" />
+            New Post
+          </Button>
         </div>
-      </div>
 
-      {loading ? (
-        <div className="flex justify-center">
-          <Loader2 className="h-8 w-8 animate-spin" />
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {entries.map(entry => (
-            <Card key={entry._id} className="hover:shadow-md transition-all">
-              <CardContent className="p-6">
-                <h2 className="text-xl font-semibold mb-2">{entry.title}</h2>
-                <p className="text-muted-foreground line-clamp-2 mb-4">
-                  {entry.content}
-                </p>
-
-                <div className="flex justify-between items-center text-sm">
-                  <div className="flex items-center gap-4">
-                    <span className="text-muted-foreground">
-                      by {entry.author}
-                    </span>
-                    <button
-                      onClick={() => handleLike(entry._id)}
-                      disabled={!isLoggedIn || isLikedByUser(entry)}
-                      className={`flex items-center gap-1 text-muted-foreground
-                        ${isLikedByUser(entry) ? 'text-primary' : 'hover:text-primary'}`}
-                    >
-                      <Heart
-                        className={`h-4 w-4 ${isLikedByUser(entry) ? 'fill-current' : ''}`}
-                      />
-                      {entry.likes}
-                    </button>
-                    <span className="flex items-center gap-1 text-muted-foreground">
-                      <MessageCircle className="h-4 w-4" />
-                      {entry.comments.length}
-                    </span>
-                  </div>
-
+        <div className="grid lg:grid-cols-4 gap-6">
+          {/* Sidebar */}
+          <div className="lg:col-span-1">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Categories</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {categories.map((category) => (
                   <Button
-                    variant="outline"
-                    onClick={() => router.push(`${URL_MAP.forumEntryPage}/${entry._id}`)}
+                    key={category.name}
+                    variant={selectedCategory === category.name ? "default" : "ghost"}
+                    className="w-full justify-between"
+                    onClick={() => setSelectedCategory(category.name)}
                   >
-                    Detaylar
+                    <div className="flex items-center gap-2">
+                      <category.icon className="h-4 w-4" />
+                      {category.name}
+                    </div>
+                    <Badge variant="secondary">{category.count}</Badge>
                   </Button>
+                ))}
+              </CardContent>
+            </Card>
+
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle className="text-lg">Forum Stats</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Total Posts</span>
+                  <span className="font-semibold">1,234</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Active Users</span>
+                  <span className="font-semibold">567</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Today's Posts</span>
+                  <span className="font-semibold">23</span>
                 </div>
               </CardContent>
             </Card>
-          ))}
+          </div>
 
-          <div className="flex justify-center gap-4 mt-8">
-            <Button
-              variant="outline"
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-            >
-              Önceki
-            </Button>
-            <span className="py-2">
-              Sayfa {currentPage} / {totalPages}
-            </span>
-            <Button
-              variant="outline"
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-            >
-              Sonraki
-            </Button>
+          {/* Main Content */}
+          <div className="lg:col-span-3">
+            <div className="mb-6">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  placeholder="Search discussions..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            <Tabs defaultValue="recent" className="mb-6">
+              <TabsList>
+                <TabsTrigger value="recent">Recent</TabsTrigger>
+                <TabsTrigger value="trending">Trending</TabsTrigger>
+                <TabsTrigger value="unanswered">Unanswered</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="recent" className="space-y-4">
+                {forumPosts.map((post) => (
+                  <Card key={post.id} className="hover:shadow-md transition-shadow">
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-3">
+                          <Avatar>
+                            <AvatarImage src={post.avatar || "/placeholder.svg"} />
+                            <AvatarFallback>{post.author.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <CardTitle className="text-lg hover:text-blue-600 cursor-pointer">{post.title}</CardTitle>
+                            <CardDescription>
+                              by {post.author} • {post.time}
+                            </CardDescription>
+                          </div>
+                        </div>
+                        <Badge variant="outline">{post.category}</Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-muted-foreground mb-4">{post.content}</p>
+
+                      <div className="flex items-center justify-between">
+                        <div className="flex gap-2">
+                          {post.tags.map((tag) => (
+                            <Badge key={tag} variant="secondary" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Heart className="h-4 w-4" />
+                            {post.likes}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Reply className="h-4 w-4" />
+                            {post.replies}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </TabsContent>
+
+              <TabsContent value="trending">
+                <Card>
+                  <CardContent className="pt-6">
+                    <p className="text-center text-muted-foreground">Trending discussions will appear here</p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="unanswered">
+                <Card>
+                  <CardContent className="pt-6">
+                    <p className="text-center text-muted-foreground">Unanswered questions will appear here</p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }

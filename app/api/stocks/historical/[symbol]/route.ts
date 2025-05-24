@@ -1,22 +1,16 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { stockService } from "@/lib/stockService"
+import { stockService } from "@/lib/stock-service"
 
 export async function GET(request: NextRequest, { params }: { params: { symbol: string } }) {
   try {
-    const symbol = params.symbol
-    const searchParams = request.nextUrl.searchParams
+    const { searchParams } = new URL(request.url)
     const interval = searchParams.get("interval") || "daily"
-    const outputsize = searchParams.get("outputsize") || "compact"
 
-    if (!symbol) {
-      return NextResponse.json({ error: "Symbol is required" }, { status: 400 })
-    }
+    const data = await stockService.getHistoricalData(params.symbol, interval)
 
-    const data = await stockService.getHistoricalData(symbol, interval, outputsize)
-
-    return NextResponse.json(data)
+    return NextResponse.json({ data })
   } catch (error) {
-    console.error("Error in historical data API:", error)
+    console.error("Historical data API error:", error)
     return NextResponse.json({ error: "Failed to fetch historical data" }, { status: 500 })
   }
 }

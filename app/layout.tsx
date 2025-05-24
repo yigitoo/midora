@@ -1,65 +1,45 @@
-"use client";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "@/styles/globals.css";
-import Navbar from "@/app/components/navbar/Navbar";
-import Sidebar from "@/app/components/sidebar/Sidebar";
-import useSidebar from "@/hooks/useSidebar";
-import { IMAGE_URL } from "@/lib/urls";
-import { AuthProvider } from "@/services/AuthProvider";
-import { ThemeProvider } from "@/app/components/ThemeProvider";
-import { cn } from "@/lib/utils";
+import type React from "react"
+import type { Metadata } from "next"
+import { Inter } from "next/font/google"
+import "./globals.css"
+import { ThemeProvider } from "@/components/theme-provider"
+import { AuthProvider } from "@/lib/auth-context"
+import { SidebarProvider } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/app-sidebar"
+import { Navbar } from "@/components/ui/navbar"
+import { Toaster } from "@/components/ui/toaster"
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"] })
+
+export const metadata: Metadata = {
+  title: "Midora - Financial Analysis Platform",
+  description: "Professional stock market analysis with watchlists, screener, and technical indicators",
+    generator: 'v0.dev'
+}
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  const { isOpen, isCollapsed, toggleOpen } = useSidebar();
-
   return (
-    <html lang="tr" suppressHydrationWarning>
-      <head>
-        <link rel="icon" href={IMAGE_URL.logoUrl} sizes="any" />
-        <link
-          rel="icon"
-          href={IMAGE_URL.logoUrl}
-          type="image/jpeg"
-          sizes="any"
-        />
-        <link
-          rel="apple-touch-icon"
-          href={IMAGE_URL.logoUrl}
-          type="image/jpeg"
-          sizes="any"
-        />
-        <title>
-          💸Midora - Finansal Hizmetler
-        </title>
-      </head>
-      <body className={inter.className + ' bg-secondary'}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>
         <AuthProvider>
           <ThemeProvider>
-            <Navbar toggleSidebar={toggleOpen} />
-            <Sidebar isOpen={isOpen} />
-            <main
-              className={cn(
-                "md:ml-0 transition-all duration-300 ease-in-out",
-                isOpen
-                  ? isCollapsed
-                    ? "ml-5 md:ml-16 md:w-[calc(100vw - 4rem)] lg:w-[calc(100vw - 16rem)]"
-                    : "ml-16md:w-[calc(100vw - 4rem)] lg:w-[calc(100vw - 16rem)]"
-                  : "ml-0 w-full"
-              )}
-            >
-              {children}
-            </main>
+              <SidebarProvider>
+                <div className="min-h-screen bg-background flex w-full px-5">
+                  <AppSidebar />
+                  <div className="flex-1 flex flex-col">
+                    <Navbar />
+                    <main className="flex-1">{children}</main>
+                  </div>
+                </div>
+                <Toaster />
+              </SidebarProvider>
           </ThemeProvider>
         </AuthProvider>
       </body>
     </html>
-  );
+  )
 }
-

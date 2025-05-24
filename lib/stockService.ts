@@ -1,7 +1,5 @@
-import axios from "axios"
-import { redis } from "./redis"
+import { getRedis } from "./redis"
 
-// Types for our stock data
 export interface StockData {
   symbol: string
   name: string
@@ -15,112 +13,146 @@ export interface StockData {
   dividendYield?: number
   beta?: number
   eps?: number
-  exchange: "BIST" | "NYSE" | "NASDAQ" | "OTHER"
+  exchange: "BIST" | "NYSE" | "NASDAQ"
   currency?: string
   open?: number
   high?: number
   low?: number
   previousClose?: number
+  fiftyTwoWeekHigh?: number
+  fiftyTwoWeekLow?: number
+  avgVolume?: number
+  bookValue?: number
+  priceToBook?: number
+  ebitda?: number
+  revenuePerShare?: number
+  profitMargin?: number
+  operatingMargin?: number
+  returnOnAssets?: number
+  returnOnEquity?: number
+  quarterlyEarningsGrowth?: number
+  quarterlyRevenueGrowth?: number
+  analystTargetPrice?: number
+  trailingPE?: number
+  forwardPE?: number
+  pegRatio?: number
+  priceToSales?: number
+  priceToBook2?: number
+  enterpriseValue?: number
+  forwardAnnualDividendRate?: number
+  forwardAnnualDividendYield?: number
+  payoutRatio?: number
+  dividendDate?: string
+  exDividendDate?: string
+  lastSplitFactor?: string
+  lastSplitDate?: string
 }
 
 export interface StockHistoricalData {
   date: string
+  price: number
   open: number
   high: number
   low: number
-  close: number
   volume: number
 }
 
-export interface StockFilters {
-  exchange?: string
-  industry?: string
-  marketCap?: string
-  volume?: [number, number]
-  priceRange?: [number, number]
-}
-
-// Cache TTL in seconds
-const CACHE_TTL = {
-  SEARCH: 60 * 5, // 5 minutes
-  DETAILS: 60 * 2, // 2 minutes
-  HISTORICAL: 60 * 60, // 1 hour
-  TOP_STOCKS: 60 * 15, // 15 minutes
+export interface NewsArticle {
+  title: string
+  summary: string
+  url: string
+  source: string
+  publishedAt: string
+  sentiment: "positive" | "negative" | "neutral"
+  relevanceScore: number
+  imageUrl?: string
 }
 
 class StockService {
   private apiKey: string
   private bistStocks: Record<string, any>
+  private redis: any
 
   constructor() {
-    // Get API key from environment variable
     this.apiKey = process.env.ALPHA_VANTAGE_API_KEY || "demo"
-
-    // Initialize BIST stocks data (since Alpha Vantage has limited coverage)
     this.bistStocks = this.initializeBistStocks()
+    try {
+      this.redis = getRedis()
+    } catch (error) {
+      console.warn("Redis not available, using memory cache")
+      this.redis = null
+    }
   }
 
-  // Search for stocks across exchanges
+  private async getFromCache(key: string): Promise<any> {
+    if (!this.redis) return null
+    try {
+      const value = await this.redis.get(key)
+      return value ? JSON.parse(value) : null
+    } catch (error) {
+      console.error("Redis GET error:", error)
+      return null
+    }
+  }
+
+  private async setCache(key: string, value: any, ttl = 300): Promise<void> {
+    if (!this.redis) return
+    try {
+      await this.redis.setex(key, ttl, JSON.stringify(value))
+    } catch (error) {
+      console.error("Redis SET error:", error)
+    }
+  }
+
   async searchStocks(query: string, exchange?: string): Promise<StockData[]> {
     if (!query) return []
 
     const cacheKey = `search:${query}:${exchange || "all"}`
-
-    // Try to get from cache first
-    const cachedResult = await redis.get(cacheKey)
-    if (cachedResult) {
-      return JSON.parse(cachedResult)
-    }
+    const cached = await this.getFromCache(cacheKey)
+    if (cached) return cached
 
     try {
       // For BIST stocks, use our predefined list
       if (exchange === "BIST") {
         const results = Object.values(this.bistStocks)
           .filter(
-            (stock) =>
+            (stock: any) =>
               stock.symbol.toLowerCase().includes(query.toLowerCase()) ||
               stock.name.toLowerCase().includes(query.toLowerCase()),
           )
           .slice(0, 10)
-          .map((stock) => ({
-            symbol: stock.symbol,
-            name: stock.name,
-            price: stock.price,
-            change: stock.change,
-            changePercent: stock.changePercent,
+          .map((stock: any) => ({
+            ...stock,
             exchange: "BIST" as const,
           }))
 
-        await redis.set(cacheKey, JSON.stringify(results), { ex: CACHE_TTL.SEARCH })
+        await this.setCache(cacheKey, results, 300)
         return results
       }
 
       // For other exchanges, use Alpha Vantage
-      const response = await axios.get(`https://www.alphavantage.co/query`, {
-        params: {
-          function: "SYMBOL_SEARCH",
-          keywords: query,
-          apikey: this.apiKey,
-        },
-      })
+      const response = await fetch(
+        `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${query}&apikey=${this.apiKey}`,
+      )
+      const data = await response.json()
 
-      if (response.data.Note) {
-        console.warn("Alpha Vantage API limit reached:", response.data.Note)
-        throw new Error("API rate limit reached")
-      }
-
-      if (!response.data.bestMatches) {
+      if (data.Note) {
+        console.warn("Alpha Vantage API limit reached")
         return []
       }
 
-      const results = response.data.bestMatches
+      if (!data.bestMatches) {
+        return []
+      }
+
+      const results = data.bestMatches
         .filter((match: any) => !exchange || match["4. region"].includes(exchange))
         .slice(0, 10)
         .map((match: any) => ({
           symbol: match["1. symbol"],
           name: match["2. name"],
           exchange: this.mapExchange(match["4. region"]),
-          price: 0, // We'll need to fetch this separately
+          price: 0,
           change: 0,
           changePercent: 0,
         }))
@@ -129,81 +161,64 @@ class StockService {
       const resultsWithPrices = await Promise.all(
         results.map(async (stock: StockData) => {
           try {
-            const details = await this.getStockDetails(stock.symbol)
-            return {
-              ...stock,
-              price: details.price,
-              change: details.change,
-              changePercent: details.changePercent,
-            }
+            const details = await this.getStockDetails(stock.symbol, stock.exchange)
+            return details || stock
           } catch (error) {
             return stock
           }
         }),
       )
 
-      await redis.set(cacheKey, JSON.stringify(resultsWithPrices), { ex: CACHE_TTL.SEARCH })
+      await this.setCache(cacheKey, resultsWithPrices, 300)
       return resultsWithPrices
     } catch (error) {
       console.error("Error searching stocks:", error)
-
-      // If API fails, return empty array
       return []
     }
   }
 
-  // Get detailed stock information
-  async getStockDetails(symbol: string): Promise<StockData> {
-    const cacheKey = `stock:${symbol}`
-
-    // Try to get from cache first
-    const cachedResult = await redis.get(cacheKey)
-    if (cachedResult) {
-      return JSON.parse(cachedResult)
-    }
+  async getStockDetails(symbol: string, exchange?: string): Promise<StockData | null> {
+    const cacheKey = `stock:${symbol}:${exchange || "default"}`
+    const cached = await this.getFromCache(cacheKey)
+    if (cached) return cached
 
     try {
       // For BIST stocks, use our predefined data
-      if (this.bistStocks[symbol]) {
+      if (exchange === "BIST" || this.bistStocks[symbol]) {
         const stock = this.bistStocks[symbol]
-        await redis.set(cacheKey, JSON.stringify(stock), { ex: CACHE_TTL.DETAILS })
-        return stock
+        if (!stock) return null
+
+        const result = {
+          ...stock,
+          exchange: "BIST" as const,
+        }
+
+        await this.setCache(cacheKey, result, 120)
+        return result
       }
 
       // For other stocks, use Alpha Vantage
-      const quoteResponse = await axios.get(`https://www.alphavantage.co/query`, {
-        params: {
-          function: "GLOBAL_QUOTE",
-          symbol: symbol,
-          apikey: this.apiKey,
-        },
-      })
+      const [quoteResponse, overviewResponse] = await Promise.all([
+        fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${this.apiKey}`),
+        fetch(`https://www.alphavantage.co/query?function=OVERVIEW&symbol=${symbol}&apikey=${this.apiKey}`),
+      ])
 
-      if (quoteResponse.data.Note) {
-        console.warn("Alpha Vantage API limit reached:", quoteResponse.data.Note)
-        throw new Error("API rate limit reached")
+      const quoteData = await quoteResponse.json()
+      const overviewData = await overviewResponse.json()
+
+      if (quoteData.Note || overviewData.Note) {
+        console.warn("Alpha Vantage API limit reached")
+        return null
       }
 
-      const quote = quoteResponse.data["Global Quote"]
-
+      const quote = quoteData["Global Quote"]
       if (!quote || !quote["01. symbol"]) {
-        throw new Error("Stock not found")
+        return null
       }
-
-      // Get company overview for additional details
-      const overviewResponse = await axios.get(`https://www.alphavantage.co/query`, {
-        params: {
-          function: "OVERVIEW",
-          symbol: symbol,
-          apikey: this.apiKey,
-        },
-      })
-
-      const overview = overviewResponse.data
 
       const stock: StockData = {
         symbol: quote["01. symbol"],
-        name: overview.Name || symbol,
+        name: overviewData.Name || symbol,
         price: Number.parseFloat(quote["05. price"]),
         change: Number.parseFloat(quote["09. change"]),
         changePercent: Number.parseFloat(quote["10. change percent"].replace("%", "")),
@@ -212,117 +227,134 @@ class StockService {
         low: Number.parseFloat(quote["04. low"]),
         previousClose: Number.parseFloat(quote["08. previous close"]),
         volume: Number.parseInt(quote["06. volume"]),
-        marketCap: overview.MarketCapitalization ? Number.parseInt(overview.MarketCapitalization) : undefined,
-        pe: overview.PERatio ? Number.parseFloat(overview.PERatio) : undefined,
-        eps: overview.EPS ? Number.parseFloat(overview.EPS) : undefined,
-        dividendYield: overview.DividendYield ? Number.parseFloat(overview.DividendYield) : undefined,
-        industry: overview.Industry,
-        exchange: this.mapExchange(overview.Exchange),
-        currency: overview.Currency,
+        marketCap: overviewData.MarketCapitalization ? Number.parseInt(overviewData.MarketCapitalization) : undefined,
+        pe: overviewData.PERatio ? Number.parseFloat(overviewData.PERatio) : undefined,
+        eps: overviewData.EPS ? Number.parseFloat(overviewData.EPS) : undefined,
+        dividendYield: overviewData.DividendYield ? Number.parseFloat(overviewData.DividendYield) : undefined,
+        industry: overviewData.Industry,
+        exchange: this.mapExchange(overviewData.Exchange) || "NYSE",
+        currency: "USD",
+        fiftyTwoWeekHigh: overviewData["52WeekHigh"] ? Number.parseFloat(overviewData["52WeekHigh"]) : undefined,
+        fiftyTwoWeekLow: overviewData["52WeekLow"] ? Number.parseFloat(overviewData["52WeekLow"]) : undefined,
+        beta: overviewData.Beta ? Number.parseFloat(overviewData.Beta) : undefined,
+        bookValue: overviewData.BookValue ? Number.parseFloat(overviewData.BookValue) : undefined,
+        priceToBook: overviewData.PriceToBookRatio ? Number.parseFloat(overviewData.PriceToBookRatio) : undefined,
+        ebitda: overviewData.EBITDA ? Number.parseInt(overviewData.EBITDA) : undefined,
+        revenuePerShare: overviewData.RevenuePerShareTTM
+          ? Number.parseFloat(overviewData.RevenuePerShareTTM)
+          : undefined,
+        profitMargin: overviewData.ProfitMargin ? Number.parseFloat(overviewData.ProfitMargin) : undefined,
+        operatingMargin: overviewData.OperatingMarginTTM
+          ? Number.parseFloat(overviewData.OperatingMarginTTM)
+          : undefined,
+        returnOnAssets: overviewData.ReturnOnAssetsTTM ? Number.parseFloat(overviewData.ReturnOnAssetsTTM) : undefined,
+        returnOnEquity: overviewData.ReturnOnEquityTTM ? Number.parseFloat(overviewData.ReturnOnEquityTTM) : undefined,
+        quarterlyEarningsGrowth: overviewData.QuarterlyEarningsGrowthYOY
+          ? Number.parseFloat(overviewData.QuarterlyEarningsGrowthYOY)
+          : undefined,
+        quarterlyRevenueGrowth: overviewData.QuarterlyRevenueGrowthYOY
+          ? Number.parseFloat(overviewData.QuarterlyRevenueGrowthYOY)
+          : undefined,
+        analystTargetPrice: overviewData.AnalystTargetPrice
+          ? Number.parseFloat(overviewData.AnalystTargetPrice)
+          : undefined,
+        trailingPE: overviewData.TrailingPE ? Number.parseFloat(overviewData.TrailingPE) : undefined,
+        forwardPE: overviewData.ForwardPE ? Number.parseFloat(overviewData.ForwardPE) : undefined,
+        pegRatio: overviewData.PEGRatio ? Number.parseFloat(overviewData.PEGRatio) : undefined,
+        priceToSales: overviewData.PriceToSalesRatioTTM
+          ? Number.parseFloat(overviewData.PriceToSalesRatioTTM)
+          : undefined,
+        enterpriseValue: overviewData.EnterpriseValue ? Number.parseInt(overviewData.EnterpriseValue) : undefined,
+        forwardAnnualDividendRate: overviewData.ForwardAnnualDividendRate
+          ? Number.parseFloat(overviewData.ForwardAnnualDividendRate)
+          : undefined,
+        forwardAnnualDividendYield: overviewData.ForwardAnnualDividendYield
+          ? Number.parseFloat(overviewData.ForwardAnnualDividendYield)
+          : undefined,
+        payoutRatio: overviewData.PayoutRatio ? Number.parseFloat(overviewData.PayoutRatio) : undefined,
+        dividendDate: overviewData.DividendDate,
+        exDividendDate: overviewData.ExDividendDate,
+        lastSplitFactor: overviewData.LastSplitFactor,
+        lastSplitDate: overviewData.LastSplitDate,
       }
 
-      await redis.set(cacheKey, JSON.stringify(stock), { ex: CACHE_TTL.DETAILS })
+      await this.setCache(cacheKey, stock, 120)
       return stock
     } catch (error) {
       console.error(`Error fetching stock details for ${symbol}:`, error)
-
-      // If API fails, throw error
-      throw new Error(`Failed to fetch details for ${symbol}`)
+      return null
     }
   }
 
-  // Get historical data for a stock
   async getHistoricalData(symbol: string, interval = "daily", outputsize = "compact"): Promise<StockHistoricalData[]> {
     const cacheKey = `historical:${symbol}:${interval}:${outputsize}`
-
-    // Try to get from cache first
-    const cachedResult = await redis.get(cacheKey)
-    if (cachedResult) {
-      return JSON.parse(cachedResult)
-    }
+    const cached = await this.getFromCache(cacheKey)
+    if (cached) return cached
 
     try {
       // For BIST stocks, generate mock historical data
       if (this.bistStocks[symbol]) {
         const data = this.generateMockHistoricalData(symbol)
-        await redis.set(cacheKey, JSON.stringify(data), { ex: CACHE_TTL.HISTORICAL })
+        await this.setCache(cacheKey, data, 3600)
         return data
       }
 
-      // Map interval to Alpha Vantage function
       const functionMap: Record<string, string> = {
         daily: "TIME_SERIES_DAILY",
         weekly: "TIME_SERIES_WEEKLY",
         monthly: "TIME_SERIES_MONTHLY",
       }
 
-      const response = await axios.get(`https://www.alphavantage.co/query`, {
-        params: {
-          function: functionMap[interval] || "TIME_SERIES_DAILY",
-          symbol: symbol,
-          outputsize: outputsize,
-          apikey: this.apiKey,
-        },
-      })
+      const response = await fetch(
+        `https://www.alphavantage.co/query?function=${functionMap[interval] || "TIME_SERIES_DAILY"}&symbol=${symbol}&outputsize=${outputsize}&apikey=${this.apiKey}`,
+      )
+      const data = await response.json()
 
-      if (response.data.Note) {
-        console.warn("Alpha Vantage API limit reached:", response.data.Note)
-        throw new Error("API rate limit reached")
+      if (data.Note) {
+        console.warn("Alpha Vantage API limit reached")
+        return []
       }
 
-      // Extract the time series data
-      const timeSeriesKey = Object.keys(response.data).find((key) => key.includes("Time Series"))
-
-      if (!timeSeriesKey || !response.data[timeSeriesKey]) {
-        throw new Error("Historical data not available")
+      const timeSeriesKey = Object.keys(data).find((key) => key.includes("Time Series"))
+      if (!timeSeriesKey || !data[timeSeriesKey]) {
+        return []
       }
 
-      const timeSeries = response.data[timeSeriesKey]
-
-      // Convert to our format
+      const timeSeries = data[timeSeriesKey]
       const historicalData: StockHistoricalData[] = Object.entries(timeSeries)
         .map(([date, values]: [string, any]) => ({
           date,
           open: Number.parseFloat(values["1. open"]),
           high: Number.parseFloat(values["2. high"]),
           low: Number.parseFloat(values["3. low"]),
-          close: Number.parseFloat(values["4. close"]),
+          price: Number.parseFloat(values["4. close"]),
           volume: Number.parseInt(values["5. volume"]),
         }))
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 
-      await redis.set(cacheKey, JSON.stringify(historicalData), { ex: CACHE_TTL.HISTORICAL })
+      await this.setCache(cacheKey, historicalData, 3600)
       return historicalData
     } catch (error) {
       console.error(`Error fetching historical data for ${symbol}:`, error)
-
-      // If API fails, return empty array
       return []
     }
   }
 
-  // Get top stocks by market cap
   async getTopStocks(exchange = "NYSE", limit = 10): Promise<StockData[]> {
     const cacheKey = `top:${exchange}:${limit}`
-
-    // Try to get from cache first
-    const cachedResult = await redis.get(cacheKey)
-    if (cachedResult) {
-      return JSON.parse(cachedResult)
-    }
+    const cached = await this.getFromCache(cacheKey)
+    if (cached) return cached
 
     try {
       if (exchange === "BIST") {
-        // For BIST, use our predefined list
         const topBistStocks = Object.values(this.bistStocks)
-          .sort((a, b) => (b.marketCap || 0) - (a.marketCap || 0))
+          .sort((a: any, b: any) => (b.marketCap || 0) - (a.marketCap || 0))
           .slice(0, limit)
 
-        await redis.set(cacheKey, JSON.stringify(topBistStocks), { ex: CACHE_TTL.TOP_STOCKS })
+        await this.setCache(cacheKey, topBistStocks, 900)
         return topBistStocks
       } else {
         // For US markets, use a predefined list of top stocks
-        // Alpha Vantage doesn't have a direct "top stocks" endpoint
         const topUSSymbols = [
           "AAPL",
           "MSFT",
@@ -352,7 +384,7 @@ class StockService {
 
         const stocks = (await Promise.all(stockPromises)).filter(Boolean) as StockData[]
 
-        await redis.set(cacheKey, JSON.stringify(stocks), { ex: CACHE_TTL.TOP_STOCKS })
+        await this.setCache(cacheKey, stocks, 900)
         return stocks
       }
     } catch (error) {
@@ -361,86 +393,65 @@ class StockService {
     }
   }
 
-  // Filter stocks based on criteria
-  async filterStocks(filters: StockFilters): Promise<StockData[]> {
-    const filterKey = JSON.stringify(filters)
-    const cacheKey = `filter:${filterKey}`
-
-    // Try to get from cache first
-    const cachedResult = await redis.get(cacheKey)
-    if (cachedResult) {
-      return JSON.parse(cachedResult)
-    }
+  async getStockNews(symbol: string, limit = 10): Promise<NewsArticle[]> {
+    const cacheKey = `news:${symbol}:${limit}`
+    const cached = await this.getFromCache(cacheKey)
+    if (cached) return cached
 
     try {
-      let stocks: StockData[] = []
+      const response = await fetch(
+        `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=${symbol}&limit=${limit}&apikey=${this.apiKey}`,
+      )
+      const data = await response.json()
 
-      if (filters.exchange === "BIST") {
-        stocks = Object.values(this.bistStocks)
-      } else {
-        // For US markets, use our top stocks as a base
-        stocks = await this.getTopStocks(filters.exchange, 20)
+      if (data.Note) {
+        console.warn("Alpha Vantage API limit reached")
+        return []
       }
 
-      // Apply filters
-      const filteredStocks = stocks.filter((stock) => {
-        // Filter by industry
-        if (filters.industry && filters.industry !== "All" && stock.industry !== filters.industry) {
-          return false
-        }
+      const feed = data.feed || []
+      const news = feed.map((item: any) => ({
+        title: item.title,
+        summary: item.summary,
+        url: item.url,
+        source: item.source,
+        publishedAt: item.time_published,
+        sentiment: this.mapSentiment(item.overall_sentiment_label),
+        relevanceScore: Number.parseFloat(item.overall_sentiment_score),
+        imageUrl: item.banner_image,
+      }))
 
-        // Filter by market cap
-        if (filters.marketCap && filters.marketCap !== "all" && stock.marketCap) {
-          const marketCapInBillions = stock.marketCap / 1e9
-          if (
-            (filters.marketCap === "micro" && (marketCapInBillions < 0.05 || marketCapInBillions >= 0.3)) ||
-            (filters.marketCap === "small" && (marketCapInBillions < 0.3 || marketCapInBillions >= 2)) ||
-            (filters.marketCap === "mid" && (marketCapInBillions < 2 || marketCapInBillions >= 10)) ||
-            (filters.marketCap === "large" && (marketCapInBillions < 10 || marketCapInBillions >= 200)) ||
-            (filters.marketCap === "mega" && marketCapInBillions < 200)
-          ) {
-            return false
-          }
-        }
-
-        // Filter by volume
-        if (filters.volume && stock.volume) {
-          const volumeInMillions = stock.volume / 1e6
-          if (volumeInMillions < filters.volume[0] || volumeInMillions > filters.volume[1]) {
-            return false
-          }
-        }
-
-        // Filter by price range
-        if (filters.priceRange && (stock.price < filters.priceRange[0] || stock.price > filters.priceRange[1])) {
-          return false
-        }
-
-        return true
-      })
-
-      await redis.set(cacheKey, JSON.stringify(filteredStocks), { ex: CACHE_TTL.SEARCH })
-      return filteredStocks
+      await this.setCache(cacheKey, news, 300)
+      return news
     } catch (error) {
-      console.error("Error filtering stocks:", error)
+      console.error(`Error fetching news for ${symbol}:`, error)
       return []
     }
   }
 
-  // Helper method to map exchange names
-  private mapExchange(exchange: string): "BIST" | "NYSE" | "NASDAQ" | "OTHER" {
-    if (exchange.includes("BIST") || exchange.includes("Istanbul")) {
+  private mapExchange(exchange: string): "BIST" | "NYSE" | "NASDAQ" {
+    if (exchange?.includes("BIST") || exchange?.includes("Istanbul")) {
       return "BIST"
-    } else if (exchange.includes("NYSE")) {
+    } else if (exchange?.includes("NYSE")) {
       return "NYSE"
-    } else if (exchange.includes("NASDAQ")) {
-      return "NASDAQ"
     } else {
-      return "OTHER"
+      return "NASDAQ"
     }
   }
 
-  // Initialize BIST stocks data
+  private mapSentiment(sentimentLabel: string): "positive" | "negative" | "neutral" {
+    switch (sentimentLabel?.toLowerCase()) {
+      case "bullish":
+      case "somewhat-bullish":
+        return "positive"
+      case "bearish":
+      case "somewhat-bearish":
+        return "negative"
+      default:
+        return "neutral"
+    }
+  }
+
   private initializeBistStocks(): Record<string, StockData> {
     return {
       THYAO: {
@@ -462,6 +473,24 @@ class StockService {
         high: 246.8,
         low: 241.5,
         previousClose: 242.4,
+        fiftyTwoWeekHigh: 280.5,
+        fiftyTwoWeekLow: 180.2,
+        avgVolume: 12000000,
+        bookValue: 85.6,
+        priceToBook: 2.87,
+        ebitda: 15000000000,
+        profitMargin: 0.12,
+        operatingMargin: 0.15,
+        returnOnAssets: 0.08,
+        returnOnEquity: 0.18,
+        quarterlyEarningsGrowth: 0.25,
+        quarterlyRevenueGrowth: 0.18,
+        analystTargetPrice: 275.0,
+        trailingPE: 5.8,
+        forwardPE: 5.2,
+        pegRatio: 0.8,
+        priceToSales: 1.2,
+        enterpriseValue: 350000000000,
       },
       GARAN: {
         symbol: "GARAN",
@@ -482,6 +511,27 @@ class StockService {
         high: 36.58,
         low: 35.92,
         previousClose: 36.0,
+        fiftyTwoWeekHigh: 42.5,
+        fiftyTwoWeekLow: 28.8,
+        avgVolume: 22000000,
+        bookValue: 28.5,
+        priceToBook: 1.28,
+        ebitda: 25000000000,
+        profitMargin: 0.22,
+        operatingMargin: 0.35,
+        returnOnAssets: 0.12,
+        returnOnEquity: 0.15,
+        quarterlyEarningsGrowth: 0.15,
+        quarterlyRevenueGrowth: 0.12,
+        analystTargetPrice: 40.0,
+        trailingPE: 3.5,
+        forwardPE: 3.2,
+        pegRatio: 0.6,
+        priceToSales: 2.8,
+        enterpriseValue: 160000000000,
+        forwardAnnualDividendRate: 0.9,
+        forwardAnnualDividendYield: 2.5,
+        payoutRatio: 0.35,
       },
       ASELS: {
         symbol: "ASELS",
@@ -502,6 +552,27 @@ class StockService {
         high: 34.12,
         low: 33.65,
         previousClose: 34.0,
+        fiftyTwoWeekHigh: 38.5,
+        fiftyTwoWeekLow: 25.2,
+        avgVolume: 7500000,
+        bookValue: 22.8,
+        priceToBook: 1.48,
+        ebitda: 8500000000,
+        profitMargin: 0.18,
+        operatingMargin: 0.22,
+        returnOnAssets: 0.1,
+        returnOnEquity: 0.16,
+        quarterlyEarningsGrowth: 0.2,
+        quarterlyRevenueGrowth: 0.15,
+        analystTargetPrice: 37.5,
+        trailingPE: 6.2,
+        forwardPE: 5.8,
+        pegRatio: 0.9,
+        priceToSales: 3.2,
+        enterpriseValue: 78000000000,
+        forwardAnnualDividendRate: 0.6,
+        forwardAnnualDividendYield: 1.8,
+        payoutRatio: 0.25,
       },
       KCHOL: {
         symbol: "KCHOL",
@@ -522,46 +593,27 @@ class StockService {
         high: 93.45,
         low: 91.85,
         previousClose: 92.0,
-      },
-      EREGL: {
-        symbol: "EREGL",
-        name: "Ereğli Demir Çelik",
-        price: 28.64,
-        change: 0.34,
-        changePercent: 1.2,
-        marketCap: 100240000000,
-        volume: 18000000,
-        industry: "Steel",
-        pe: 4.2,
-        dividendYield: 5.1,
-        beta: 1.1,
-        eps: 6.82,
-        exchange: "BIST",
-        currency: "TRY",
-        open: 28.3,
-        high: 28.76,
-        low: 28.22,
-        previousClose: 28.3,
-      },
-      AKBNK: {
-        symbol: "AKBNK",
-        name: "Akbank",
-        price: 25.76,
-        change: 0.26,
-        changePercent: 1.02,
-        marketCap: 133952000000,
-        volume: 22000000,
-        industry: "Finance",
-        pe: 3.8,
-        dividendYield: 2.2,
-        beta: 0.88,
-        eps: 6.78,
-        exchange: "BIST",
-        currency: "TRY",
-        open: 25.5,
-        high: 25.88,
-        low: 25.42,
-        previousClose: 25.5,
+        fiftyTwoWeekHigh: 105.8,
+        fiftyTwoWeekLow: 75.2,
+        avgVolume: 10500000,
+        bookValue: 65.2,
+        priceToBook: 1.43,
+        ebitda: 35000000000,
+        profitMargin: 0.15,
+        operatingMargin: 0.18,
+        returnOnAssets: 0.09,
+        returnOnEquity: 0.14,
+        quarterlyEarningsGrowth: 0.18,
+        quarterlyRevenueGrowth: 0.14,
+        analystTargetPrice: 98.5,
+        trailingPE: 7.8,
+        forwardPE: 7.2,
+        pegRatio: 1.1,
+        priceToSales: 1.8,
+        enterpriseValue: 245000000000,
+        forwardAnnualDividendRate: 3.0,
+        forwardAnnualDividendYield: 3.2,
+        payoutRatio: 0.4,
       },
       TUPRS: {
         symbol: "TUPRS",
@@ -582,91 +634,48 @@ class StockService {
         high: 145.8,
         low: 142.7,
         previousClose: 143.0,
-      },
-      BIMAS: {
-        symbol: "BIMAS",
-        name: "BİM Mağazalar",
-        price: 124.5,
-        change: -1.5,
-        changePercent: -1.19,
-        marketCap: 75585000000,
-        volume: 4000000,
-        industry: "Retail",
-        pe: 18.2,
-        dividendYield: 1.2,
-        beta: 0.65,
-        eps: 6.84,
-        exchange: "BIST",
-        currency: "TRY",
-        open: 126.0,
-        high: 126.4,
-        low: 124.2,
-        previousClose: 126.0,
-      },
-      SISE: {
-        symbol: "SISE",
-        name: "Şişecam",
-        price: 16.92,
-        change: 0.12,
-        changePercent: 0.71,
-        marketCap: 38070000000,
-        volume: 15000000,
-        industry: "Manufacturing",
-        pe: 5.6,
-        dividendYield: 3.8,
-        beta: 0.92,
-        eps: 3.02,
-        exchange: "BIST",
-        currency: "TRY",
-        open: 16.8,
-        high: 17.05,
-        low: 16.75,
-        previousClose: 16.8,
-      },
-      YKBNK: {
-        symbol: "YKBNK",
-        name: "Yapı Kredi Bankası",
-        price: 12.84,
-        change: 0.14,
-        changePercent: 1.1,
-        marketCap: 108500000000,
-        volume: 20000000,
-        industry: "Finance",
-        pe: 3.2,
-        dividendYield: 1.8,
-        beta: 0.95,
-        eps: 4.01,
-        exchange: "BIST",
-        currency: "TRY",
-        open: 12.7,
-        high: 12.92,
-        low: 12.68,
-        previousClose: 12.7,
+        fiftyTwoWeekHigh: 165.5,
+        fiftyTwoWeekLow: 125.8,
+        avgVolume: 4500000,
+        bookValue: 95.2,
+        priceToBook: 1.53,
+        ebitda: 12000000000,
+        profitMargin: 0.2,
+        operatingMargin: 0.25,
+        returnOnAssets: 0.11,
+        returnOnEquity: 0.18,
+        quarterlyEarningsGrowth: 0.22,
+        quarterlyRevenueGrowth: 0.16,
+        analystTargetPrice: 155.0,
+        trailingPE: 8.4,
+        forwardPE: 7.8,
+        pegRatio: 1.0,
+        priceToSales: 2.1,
+        enterpriseValue: 38000000000,
+        forwardAnnualDividendRate: 6.5,
+        forwardAnnualDividendYield: 4.5,
+        payoutRatio: 0.45,
       },
     }
   }
 
-  // Generate mock historical data for BIST stocks
   private generateMockHistoricalData(symbol: string): StockHistoricalData[] {
     const stock = this.bistStocks[symbol]
     if (!stock) return []
 
     const data: StockHistoricalData[] = []
     const basePrice = stock.price
-    const volatility = 0.02 // 2% daily volatility
+    const volatility = 0.02
 
-    // Generate 30 days of data
     const today = new Date()
-
     for (let i = 30; i >= 0; i--) {
       const date = new Date(today)
       date.setDate(today.getDate() - i)
 
-      // Skip weekends
       if (date.getDay() === 0 || date.getDay() === 6) continue
 
       const dailyChange = (Math.random() - 0.5) * volatility * 2
-      const dayPrice = basePrice * (1 + (dailyChange - i * 0.001)) // Slight trend based on day
+      const dayPrice = basePrice * (1 + (dailyChange - i * 0.001))
 
       const open = dayPrice * (1 - Math.random() * 0.01)
       const close = dayPrice
@@ -679,7 +688,7 @@ class StockService {
         open: Number.parseFloat(open.toFixed(2)),
         high: Number.parseFloat(high.toFixed(2)),
         low: Number.parseFloat(low.toFixed(2)),
-        close: Number.parseFloat(close.toFixed(2)),
+        price: Number.parseFloat(close.toFixed(2)),
         volume,
       })
     }
