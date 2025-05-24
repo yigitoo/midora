@@ -38,7 +38,7 @@ export function CTA() {
                         size="lg"
                         variant="outline"
                         asChild
-                        className="text-lg px-8 border-white text-white hover:bg-white hover:text-blue-600"
+                        className="text-lg px-8 border-white text-black hover:bg-white hover:text-blue-600"
                       >
                         <Link href="/about">Learn More</Link>
                       </Button>
