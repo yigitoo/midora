@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useToast } from "@/app/components/ui/use-toast"
+import { useToast } from "@/components/ui/use-toast"
 import { URL_MAP, API_URL } from '@/lib/urls'
 
 
