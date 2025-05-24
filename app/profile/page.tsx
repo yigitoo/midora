@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, use } from "react";
-import { useRouter } from "next/navigation";
 import {
   Card,
   CardHeader,
@@ -20,7 +19,6 @@ import { API_URL, URL_MAP } from "@/lib/urls";
 import { useAuth } from '@/lib/auth-context'
 
 export default function ProfilePage() {
-  const router = useRouter();
   const { isLoggedIn, user } = useAuth();
   const { toast } = useToast();
   
@@ -35,24 +33,8 @@ export default function ProfilePage() {
     lastUpdateDate: "",
   });
 
-
-    if (!isLoggedIn) {
-    router.push(URL_MAP.loginPage);
-    return (
-      <div
-        className="text-center font-bold"
-        style={{
-          fontSize: "1.5rem",
-          paddingTop: "10rem",
-        }}
-      >
-        Lütfen profilinizi görüntülemek için giriş yapın
-      </div>
-    );
-  }
-
   useEffect(() => {
-    if (user) {
+    if(user) {
       setUserData({
         name: user.name || "",
         email: user.email || "",
@@ -62,7 +44,22 @@ export default function ProfilePage() {
         lastUpdateDate: new Date(user.updatedAt).toLocaleDateString() || "",
       });
     }
-  }, [isLoggedIn, user, router]);
+  }, [isLoggedIn, user]);
+ 
+  if (!isLoggedIn) {
+    return (
+        <div
+          className="text-center font-bold"
+          style={{
+            fontSize: "1.5rem",
+            paddingTop: "10rem",
+          }}
+        >
+          Lütfen profilinizi görüntülemek için giriş yapın
+        </div>
+      );
+    }
+
 
   const handleEdit = () => {
     setIsEditing(!isEditing);
